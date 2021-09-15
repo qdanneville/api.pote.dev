@@ -6,11 +6,6 @@ import { CreateUserDto } from '../../dto/createUser.dto';
 export class CreateUserController {
     constructor(private readonly createUser: CreateUser) { }
 
-    @Get()
-    async getAll() {
-        console.log('Users');
-    }
-
     @Post()
     async createPost(@Body() user: CreateUserDto) {
         return this.createUser.create(user);

@@ -45,7 +45,6 @@ export class UserRepository {
     async createUser(user) {
 
         const userFound = await this.userExists(user.email)
-        console.log('found user ? :', userFound);
 
         if (userFound) {
             throw new BadRequestException('user already exists');

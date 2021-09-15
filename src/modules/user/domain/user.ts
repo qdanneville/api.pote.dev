@@ -87,8 +87,6 @@ export class User implements UserProps {
     public static create(props: UserProps): User {
         const user = new User({ ...props })
 
-        console.log('created class user', user)
-
         return user
     }
 }
