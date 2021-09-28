@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser'
 
 import {
   CorsConfig,
@@ -14,7 +15,7 @@ async function bootstrap() {
 
   //Validation
   app.useGlobalPipes(new ValidationPipe(
-    {disableErrorMessages: !!process.env.PRODUCTION}
+    { disableErrorMessages: !!process.env.PRODUCTION }
   ));
 
   // Prisma Client Exception Filter for unhandled exceptions
@@ -23,13 +24,21 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const nestConfig = configService.get<NestConfig>('nest');
-  // const corsConfig = configService.get<CorsConfig>('cors');
+  const corsConfig = configService.get<CorsConfig>('cors');
   // const swaggerConfig = configService.get<SwaggerConfig>('swagger');
 
-  // Cors
-  // if (corsConfig.enabled) {
-  //   app.enableCors();
-  // }
+
+  //Cookies
+  app.use(cookieParser());
+
+  //Cors
+  if (corsConfig.enabled) {
+    app.enableCors({
+      origin: corsConfig.origin,
+      credentials: corsConfig.credentials
+    });
+  }
+
 
   await app.listen(process.env.PORT || nestConfig.port || 3000);
   console.log(`Nest APP is running on port : ${process.env.PORT}`)

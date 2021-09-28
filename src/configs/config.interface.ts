@@ -3,6 +3,7 @@ export interface Config {
     cors: CorsConfig;
     swagger: SwaggerConfig;
     security: SecurityConfig;
+    redis: RedisConfig
 }
 
 export interface NestConfig {
@@ -11,6 +12,8 @@ export interface NestConfig {
 
 export interface CorsConfig {
     enabled: boolean;
+    origin:string;
+    credentials: boolean;
 }
 
 export interface SwaggerConfig {
@@ -22,7 +25,16 @@ export interface SwaggerConfig {
 }
 
 export interface SecurityConfig {
-    expiresIn: string;
-    refreshIn: string;
+    expiresIn: number;
+    refreshIn: number;
+    jwtSecret: string;
+    refreshSecret: string;
     bcryptSaltOrRound: string | number;
+}
+
+export interface RedisConfig {
+    host: string;
+    port: number;
+    db: number;
+    password: string;
 }

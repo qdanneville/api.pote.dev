@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  redis:
+    image: "redis"
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    env_file:
+      - .env
