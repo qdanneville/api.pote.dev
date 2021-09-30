@@ -59,8 +59,6 @@ export class User implements UserProps {
     public lastLogin: Date
 
     constructor(props: UserProps) {
-        console.log('Author props', props);
-
         const { firstname, lastname, username, email, password } = props;
 
         this.firstname = firstname;

@@ -19,14 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     async validate(request, payload) {
         const xsrfToken = JSON.parse(request?.headers['x-xsrf-token']);
 
-        console.log('xsrf token from header', xsrfToken)
-        console.log('xsrf token from access_token', payload.xsrfToken)
-
         if (xsrfToken !== payload.xsrfToken) {
             throw new UnauthorizedException('Bad xsrf token')
         }
 
-        // console.log('validate jwt auth guard ?', payload.signedCookies);
         return { userId: payload.sub, username: payload.username, email: payload.email };
     }
 }

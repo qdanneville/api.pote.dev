@@ -8,7 +8,6 @@ export class GetUserByEmailController {
 
     @Get('email/:email')
     async getUserByEmail(@Param() params: GetUserByEmailDto) {
-        console.log('EMAIL : ', params.email);
         return this.getUserByEmailService.find(params.email)
     }
 }

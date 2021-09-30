@@ -28,22 +28,17 @@ export class AuthController {
         try {
             const result = await this.authService.login(req.user);
 
-            console.log('service auth result : ', result)
-
-            /* On créer le cookie contenant le JWT */
             res.cookie('access_token', result.accessToken, {
                 httpOnly: true,
                 // secure: true,
             });
 
-            /* On créer le cookie contenant le refresh token */
             res.cookie('refresh_token', result.refreshToken, {
                 httpOnly: true,
                 // secure: true,
                 // path: '/token'
             });
 
-            /* On envoie une reponse JSON contenant les durées de vie des tokens et le token CSRF */
             res.json({
                 accessTokenExpiresIn: result.expiresIn,
                 refreshTokenExpiresIn: result.refreshIn,
@@ -51,9 +46,7 @@ export class AuthController {
             });
         }
         catch (err) {
-            throw new UnauthorizedException(
-                `Something went wrong ${err}`,
-            );
+            throw new UnauthorizedException(err);
         }
     }
 
@@ -74,17 +67,28 @@ export class AuthController {
             );
         }
 
-        const result = await this.authService.refreshToken({ email, refreshToken });
+        try {
+            const result = await this.authService.refreshToken({ email, refreshToken });
 
-        res.cookie('access_token', result.accessToken, {
-            httpOnly: true,
-            // secure: true,
-        });
+            res.cookie('access_token', result.accessToken, {
+                httpOnly: true,
+                // secure: true,
+            });
 
-        /* On envoie une reponse JSON contenant les durées de vie des tokens et le token CSRF */
-        res.json({
-            accessTokenExpiresIn: result.expiresIn,
-            xsrfToken: result.xsrfToken
-        });
+            res.cookie('refresh_token', result.refreshToken, {
+                httpOnly: true,
+                // secure: true,
+                // path: '/token'
+            });
+
+            res.json({
+                accessTokenExpiresIn: result.expiresIn,
+                refreshTokenExpiresIn: result.refreshIn,
+                xsrfToken: result.xsrfToken
+            });
+        }
+        catch (err) {
+            throw new UnauthorizedException(err);
+        }
     }
 }
