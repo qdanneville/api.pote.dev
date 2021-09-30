@@ -27,6 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
 
         // console.log('validate jwt auth guard ?', payload.signedCookies);
-        return { userId: payload.sub, username: payload.username };
+        return { userId: payload.sub, username: payload.username, email: payload.email };
     }
 }

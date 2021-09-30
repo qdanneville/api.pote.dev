@@ -28,13 +28,13 @@ export class AuthService {
     }
 
     async login(user: any) {
-        console.log('LOGIN | Creating access & refresh tokens ')
+        console.log('LOGIN | Creating access & refresh tokens with user : ', user)
 
         const xsrfToken = crypto.randomBytes(64).toString('hex');
 
-        const accessPayload = { username: user.username, sub: user.userId, xsrfToken };
+        const accessPayload = { username: user.username, email: user.email, sub: user.id, xsrfToken };
         const accessSecret = process.env.JWT_SECRET
-        const expiresIn = '60s'
+        const expiresIn = process.env.JWT_EXPIRE_IN
 
         const accessToken = await this.createJWT(
             accessPayload,
@@ -42,7 +42,7 @@ export class AuthService {
             expiresIn
         )
 
-        const refreshPayload = { username: user.username, sub: user.userId };
+        const refreshPayload = { username: user.username, sub: user.id };
         const refreshSecret = process.env.JWT_REFRESH_SECRET
         const refreshIn = '2m'
 
@@ -60,10 +60,11 @@ export class AuthService {
 
         //Storing in redis
         console.log('STORING IN REDIS');
-        this.redisHandlerService.setUser(user.userId, userProperties)
+        this.redisHandlerService.setUser(user.id, userProperties)
 
         const keys: string[] = ["role", "confirmed"];
-        const redisUser = await this.redisHandlerService.getFields(user.userId, keys);
+        console.log('user id login : ', user.id)
+        const redisUser = await this.redisHandlerService.getFields(user.id, keys);
         console.log('GET USER IN REDIS');
         console.log(redisUser);
 
@@ -72,6 +73,50 @@ export class AuthService {
             expiresIn,
             refreshToken,
             refreshIn,
+            xsrfToken
+        };
+    }
+
+    async refreshToken({ email, refreshToken }) {
+        console.log('email', email);
+        console.log('refreshToken', refreshToken);
+
+        //Verify if refresh token exists on username
+        //First we have to get the id of the user with username
+
+        const user = await this.getUserByEmail.find(email);
+        console.log('user', user);
+
+        //Get refresh token in redis with user id
+        const keys: string[] = ["refresh_token", "role"];
+        console.log('user id refresh : ', user.id)
+        const redisUser = await this.redisHandlerService.getFields(user.id, keys);
+        console.log('GET USER IN REDIS');
+        console.log(redisUser);
+
+        //Check if redis refresh is the same as cookies.refresh
+        if (refreshToken !== JSON.parse(redisUser.refresh_token)) {
+            throw new UnauthorizedException(
+                'Wrong refresh token',
+            );
+        }
+
+        console.log('refresh matches, creating new access token');
+        const xsrfToken = crypto.randomBytes(64).toString('hex');
+
+        const accessPayload = { username: user.username, email: user.email, sub: user.id, xsrfToken };
+        const accessSecret = process.env.JWT_SECRET
+        const expiresIn = process.env.JWT_EXPIRE_IN
+
+        const accessToken = await this.createJWT(
+            accessPayload,
+            accessSecret,
+            expiresIn
+        )
+
+        return {
+            accessToken,
+            expiresIn,
             xsrfToken
         };
     }

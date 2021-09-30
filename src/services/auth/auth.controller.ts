@@ -62,4 +62,29 @@ export class AuthController {
     me(@Request() req) {
         return req.user;
     }
+
+    @Post('/token')
+    async token(@Request() req, @Response() res) {
+        const refreshToken = req?.cookies?.refresh_token;
+        const email = req.body.email
+
+        if (!refreshToken || !email) {
+            throw new UnauthorizedException(
+                `Can't refresh token`,
+            );
+        }
+
+        const result = await this.authService.refreshToken({ email, refreshToken });
+
+        res.cookie('access_token', result.accessToken, {
+            httpOnly: true,
+            // secure: true,
+        });
+
+        /* On envoie une reponse JSON contenant les durées de vie des tokens et le token CSRF */
+        res.json({
+            accessTokenExpiresIn: result.expiresIn,
+            xsrfToken: result.xsrfToken
+        });
+    }
 }
