@@ -1,9 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { GetUserByEmail } from '../../modules/user/useCases/getUserByEmail/getUserByEmail.service';
 import { RedisHandlerService } from './redis/redis-handler.service';
+import { MailerService } from '@nestjs-modules/mailer';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto'
+import { UserRepository } from 'src/modules/user/user.repository';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +13,8 @@ export class AuthService {
         private redisHandlerService: RedisHandlerService,
         private jwtService: JwtService,
         private getUserByEmail: GetUserByEmail,
+        private userRepo: UserRepository,
+        private readonly mailerService: MailerService
     ) { }
 
     async validateUser(email: string, pass: string): Promise<any> {
@@ -54,7 +58,6 @@ export class AuthService {
             ["refresh_token", JSON.stringify(refreshToken)],
         ]);
 
-        //Storing in redis
         this.redisHandlerService.setUser(user.id, userProperties)
 
         return {
@@ -64,6 +67,76 @@ export class AuthService {
             refreshIn,
             xsrfToken
         };
+    }
+
+    async forgotPassword(email) {
+        const user = await this.getUserByEmail.find(email, true)
+
+        console.log('user forgot password : ', user)
+
+        if (!user) {
+            return
+        }
+
+        const forgotPasswordToken = crypto.randomBytes(64).toString('hex');
+
+        const redis = await this.redisHandlerService.client.set(
+            'FORGET_PASSWORD_' + forgotPasswordToken,
+            user.id,
+            'ex',
+            1000 * 60 //60s
+        )
+
+        const key = "FORGET_PASSWORD_" + forgotPasswordToken;
+        const userId = await this.redisHandlerService.client.get(key);
+
+        console.log('forgot password token :', forgotPasswordToken)
+        console.log('forgot password redis :', redis)
+        console.log('forgot password redis userid stored :', userId)
+
+        // await this.mailerService
+        //     .sendMail({
+        //         to: user.email,
+        //         from: 'ton@pote.dev', // sender address
+        //         subject: 'Demande de mot de passe oublié sur pote.dev ✔', // Subject line
+        //         text: `Hey ${user.firstname}, /n <a href="${process.env.APP_BASE_URL}/change-password/${forgotPasswordToken}">reset password</a>`, // plaintext body
+        //         html: `<b>Hey ${user.firstname}, /n </b></br><a href="${process.env.APP_BASE_URL}/change-password/${forgotPasswordToken}">reset password</a>`, // HTML body content
+        //     })
+
+        return
+    }
+
+    async resetPassword(body) {
+
+        console.log('body reset password : ', body);
+
+        if (body.password !== body.password_copy) {
+            throw new BadRequestException("Passwords don't match");
+        }
+
+        const key = "FORGET_PASSWORD_" + body.token;
+        const userId = await this.redisHandlerService.client.get(key);
+        console.log('reset password user id :', userId)
+
+        if (!userId) {
+            throw new BadRequestException("Token expired");
+        }
+
+        const user = await this.userRepo.getUserById(userId)
+
+        console.log('user', user);
+
+        if (!user) {
+            throw new BadRequestException("User no longer exists");
+        }
+
+        const hashedPassword = await bcrypt.hash(body.password, 10);
+
+        await this.userRepo.changePassword(userId, hashedPassword)
+
+        await this.redisHandlerService.client.del(key)
+
+        return { user }
     }
 
     async refreshToken({ email, refreshToken }) {
@@ -118,6 +191,7 @@ export class AuthService {
             xsrfToken
         };
     }
+
 
     // TODO seperate auth & redis auth logic
     // REDIS AUTH SERVICE

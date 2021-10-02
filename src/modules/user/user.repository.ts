@@ -21,13 +21,13 @@ export class UserRepository {
         return user;
     }
 
-    async getUserByEmail(email: string) {
+    async getUserByEmail(email: string, skipError: boolean) {
         const user = await this.entities.user.findUnique({
             where: {
                 email,
             },
         });
-        if (!user) {
+        if (!user && !skipError) {
             throw new NotFoundException(email);
         }
         return user;
@@ -55,6 +55,17 @@ export class UserRepository {
                 ...user
             },
         });
+    }
+
+    async changePassword(userId: string, password: string) {
+        return await this.entities.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                password,
+            },
+        })
     }
 
     deleteUser(id: string) {

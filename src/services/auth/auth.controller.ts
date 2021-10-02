@@ -17,6 +17,9 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
+import { ForgotPasswordDto } from '../../modules/user/dto/forgotPassword.dto'
+import { ResetPasswordDto } from '../../modules/user/dto/resetPassword.dto'
+
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
@@ -90,5 +93,17 @@ export class AuthController {
         catch (err) {
             throw new UnauthorizedException(err);
         }
+    }
+
+    @Post('forgot_password')
+    @HttpCode(HttpStatus.OK)
+    async forgotPassword(@Body() user: ForgotPasswordDto) {
+        return this.authService.forgotPassword(user.email)
+    }
+
+    @Post('reset_password')
+    @HttpCode(HttpStatus.OK)
+    async resetPassword(@Body() body: ResetPasswordDto) {
+        return this.authService.resetPassword(body)
     }
 }

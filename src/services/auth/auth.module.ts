@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { RedisHandlerModule } from './redis/redis-handler.module'
 import { RedisHandlerService } from './redis/redis-handler.service'
+import { UserRepository } from '../../modules/user/user.repository';
 import { AuthController } from './auth.controller'
 
 //TODO config JWT
@@ -25,10 +26,10 @@ import { AuthController } from './auth.controller'
             useFactory: (config: ConfigService) => config.get("redis"),
             inject: [ConfigService],
         }),
-        RedisHandlerModule
+        RedisHandlerModule,
     ],
     controllers: [AuthController],
-    providers: [RedisHandlerService, AuthService, LocalStrategy, JwtStrategy],
+    providers: [RedisHandlerService, AuthService, LocalStrategy, JwtStrategy, UserRepository],
     exports: [RedisHandlerService, AuthService]
 })
 export class AuthModule { }
