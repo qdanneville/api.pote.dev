@@ -12,7 +12,7 @@ const config: Config = {
     swagger: {
         enabled: true,
         title: 'pote.dev Swagger',
-        description: 'pote.dev description',
+        description: 'pote.dev | La plateforme pour apprendre à bien coder x)',
         version: '1.5',
         path: 'api',
     },
