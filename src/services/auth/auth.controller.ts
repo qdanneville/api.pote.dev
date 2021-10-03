@@ -14,8 +14,8 @@ import {
 
 
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 import { ForgotPasswordDto } from '../../modules/user/dto/forgotPassword.dto'
 import { ResetPasswordDto } from '../../modules/user/dto/resetPassword.dto'

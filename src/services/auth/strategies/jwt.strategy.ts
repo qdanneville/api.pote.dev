@@ -1,8 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { jwtConstants } from './auth.constants';
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor() {
@@ -12,12 +10,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             }]),
             passReqToCallback: true,
             ignoreExpiration: false,
-            secretOrKey: jwtConstants.secret,
+            secretOrKey: process.env.JWT_SECRET,
         });
     }
 
     async validate(request, payload) {
-        const xsrfToken = JSON.parse(request?.headers['x-xsrf-token']);
+
+        const xsrfToken = request?.headers['x-xsrf-token'] ? JSON.parse(request?.headers['x-xsrf-token']) : null;
 
         if (xsrfToken !== payload.xsrfToken) {
             throw new UnauthorizedException('Bad xsrf token')
