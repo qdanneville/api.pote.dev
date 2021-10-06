@@ -179,6 +179,10 @@ export class AuthService {
         };
     }
 
+    async currentUser(email) {
+        return this.getUserByEmail.find(email);
+    }
+
 
     // TODO seperate auth & redis auth logic
     // REDIS AUTH SERVICE

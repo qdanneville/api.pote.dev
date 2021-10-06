@@ -78,12 +78,12 @@ export class AuthController {
 
     @ApiOperation({ summary: 'Current user' })
     @ApiBearerAuth()
-    @ApiHeader({name:'x-xsrf-token'})
-    @ApiHeader({name:'Authorization'})
+    @ApiHeader({ name: 'x-xsrf-token' })
+    @ApiHeader({ name: 'Authorization' })
     @Get('me')
     @UseGuards(JwtAuthGuard)
     me(@Request() req) {
-        return req.user;
+        return this.authService.currentUser(req.user.email);
     }
 
     @Post('/token')
