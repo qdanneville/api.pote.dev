@@ -5,9 +5,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor() {
         super({
-            jwtFromRequest: ExtractJwt.fromExtractors([(request) => {
-                return request?.cookies?.access_token;
-            }]),
+            // jwtFromRequest: ExtractJwt.fromExtractors([(request) => {
+            //     return request?.cookies?.access_token;
+            // }]),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             passReqToCallback: true,
             ignoreExpiration: false,
             secretOrKey: process.env.JWT_SECRET,
@@ -16,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(request, payload) {
 
-        const xsrfToken = request?.headers['x-xsrf-token'] ? JSON.parse(request?.headers['x-xsrf-token']) : null;
+        const xsrfToken = request.headers['x-xsrf-token']
 
         if (xsrfToken !== payload.xsrfToken) {
             throw new UnauthorizedException('Bad xsrf token')

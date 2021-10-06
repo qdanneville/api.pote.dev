@@ -31,21 +31,23 @@ export class AuthController {
         try {
             const result = await this.authService.login(req.user);
 
-            res.cookie('access_token', result.accessToken, {
-                httpOnly: true,
-                // secure: true,
-            });
+            // res.cookie('access_token', result.accessToken, {
+            //     httpOnly: true,
+            //     // secure: true,
+            // });
 
-            res.cookie('refresh_token', result.refreshToken, {
-                httpOnly: true,
-                // secure: true,
-                // path: '/token'
-            });
+            // res.cookie('refresh_token', result.refreshToken, {
+            //     httpOnly: true,
+            //     // secure: true,
+            //     // path: '/token'
+            // });
 
             res.json({
                 accessTokenExpiresIn: result.expiresIn,
                 refreshTokenExpiresIn: result.refreshIn,
-                xsrfToken: result.xsrfToken
+                xsrfToken: result.xsrfToken,
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken
             });
         }
         catch (err) {
@@ -61,8 +63,9 @@ export class AuthController {
 
     @Post('/token')
     async token(@Request() req, @Response() res) {
-        const refreshToken = req?.cookies?.refresh_token;
+        // const refreshToken = req?.cookies?.refresh_token;
         const email = req.body.email
+        const refreshToken = req.body.refresh_token
 
         if (!refreshToken || !email) {
             throw new UnauthorizedException(
@@ -73,25 +76,27 @@ export class AuthController {
         try {
             const result = await this.authService.refreshToken({ email, refreshToken });
 
-            res.cookie('access_token', result.accessToken, {
-                httpOnly: true,
-                // secure: true,
-            });
+            // res.cookie('access_token', result.accessToken, {
+            //     httpOnly: true,
+            //     // secure: true,
+            // });
 
-            res.cookie('refresh_token', result.refreshToken, {
-                httpOnly: true,
-                // secure: true,
-                // path: '/token'
-            });
+            // res.cookie('refresh_token', result.refreshToken, {
+            //     httpOnly: true,
+            //     // secure: true,
+            //     // path: '/token'
+            // });
 
             res.json({
                 accessTokenExpiresIn: result.expiresIn,
                 refreshTokenExpiresIn: result.refreshIn,
-                xsrfToken: result.xsrfToken
+                xsrfToken: result.xsrfToken,
+                accessToken: result.accessToken,
+                refreshToken: result.refreshToken
             });
         }
         catch (err) {
-            throw new UnauthorizedException(err);
+            throw new UnauthorizedException(err.response);
         }
     }
 
