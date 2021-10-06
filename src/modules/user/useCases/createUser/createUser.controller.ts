@@ -4,8 +4,11 @@ import { CreateUserDto } from '../../dto/createUser.dto';
 
 import {
     ApiBody,
+    ApiTags,
+    ApiOperation
 } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
 @Controller('users')
 export class CreateUserController {
     constructor(private readonly createUser: CreateUser) { }
@@ -23,6 +26,7 @@ export class CreateUserController {
             },
         },
     })
+    @ApiOperation({ summary: 'Register' })
     @Post()
     @HttpCode(201)
     async createPost(@Body() user: CreateUserDto) {

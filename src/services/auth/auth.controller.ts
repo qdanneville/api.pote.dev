@@ -20,10 +20,31 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ForgotPasswordDto } from '../../modules/user/dto/forgotPassword.dto'
 import { ResetPasswordDto } from '../../modules/user/dto/resetPassword.dto'
 
+import {
+    ApiBody,
+    ApiOperation,
+    ApiTags,
+    ApiBearerAuth,
+    ApiHeader,
+} from '@nestjs/swagger';
+
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
+
+    @ApiOperation({ summary: 'Login' })
+    @ApiBody({
+        description: 'Login',
+        schema: {
+            type: 'object',
+            properties: {
+                email: { type: 'string' },
+                password: { type: 'string' },
+            },
+        },
+    })
     @Post('login')
     @UseGuards(LocalAuthGuard)
     @HttpCode(HttpStatus.OK)
@@ -55,6 +76,10 @@ export class AuthController {
         }
     }
 
+    @ApiOperation({ summary: 'Current user' })
+    @ApiBearerAuth()
+    @ApiHeader({name:'x-xsrf-token'})
+    @ApiHeader({name:'Authorization'})
     @Get('me')
     @UseGuards(JwtAuthGuard)
     me(@Request() req) {
