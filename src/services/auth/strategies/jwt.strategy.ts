@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(request, payload) {
-
+        //TODO, verify if user still exists in db with redit
         const xsrfToken = request?.headers['x-xsrf-token'] ? JSON.parse(request?.headers['x-xsrf-token']) : null;
 
         if (xsrfToken !== payload.xsrfToken) {
@@ -23,6 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
 
         //TODO return correct user roles
-        return { userId: payload.sub, username: payload.username, email: payload.email, roles: ['user']};
+        return { userId: payload.sub, username: payload.username, email: payload.email, roles: ['admin'], confirmed:payload.confirmed};
     }
 }

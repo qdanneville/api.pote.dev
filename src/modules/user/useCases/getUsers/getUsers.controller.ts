@@ -1,7 +1,8 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { Roles } from 'src/services/auth/decorators/roles.decorator';
 import { Role } from 'src/services/auth/enums/role.enum';
-import { RolesGuard } from 'src/services/auth/guards/roles.guard';
+import { ConfirmedGuard } from '../../../../services/auth/guards/confirmed.guard';
+import { RolesGuard } from '../../../../services/auth/guards/roles.guard';
 import { JwtAuthGuard } from '../../../../services/auth/guards/jwt-auth.guard';
 import { GetUsers } from './getUsers.service';
 
@@ -11,7 +12,7 @@ export class GetUsersController {
 
     @Get('/')
     @Roles(Role.Admin)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard, ConfirmedGuard)
     async GetAllUsers(@Request() req) {
         return this.getUsers.find()
     }

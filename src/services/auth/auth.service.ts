@@ -34,7 +34,7 @@ export class AuthService {
     async login(user: any) {
         const xsrfToken = crypto.randomBytes(64).toString('hex');
 
-        const accessPayload = { username: user.username, email: user.email, sub: user.id, xsrfToken };
+        const accessPayload = { username: user.username, email: user.email, sub: user.id, xsrfToken, confirmed: user.confirmed };
         const accessSecret = process.env.JWT_SECRET
         const expiresIn = process.env.JWT_EXPIRE_IN
 
@@ -56,7 +56,6 @@ export class AuthService {
 
         const userProperties = new Map<string, string>([
             ["role", "admin"],
-            ["confirmed", "false"],
             ["refresh_token", JSON.stringify(refreshToken)],
         ]);
 
@@ -81,10 +80,10 @@ export class AuthService {
         const forgotPasswordToken = crypto.randomBytes(64).toString('hex');
 
         await this.redisHandlerService.client.set(
-            'FORGET_PASSWORD_' + forgotPasswordToken,
+            process.env.FORGET_PASSWORD_PREFIX + forgotPasswordToken,
             user.id,
             'ex',
-            1000 * 60 //60s
+            process.env.FORGET_PASSWORD_TOKEN_EXPIRES_IN
         )
 
         await this.mailerService
@@ -104,7 +103,7 @@ export class AuthService {
             throw new BadRequestException("Passwords don't match");
         }
 
-        const key = "FORGET_PASSWORD_" + body.token;
+        const key = process.env.FORGET_PASSWORD_PREFIX + body.token;
         const userId = await this.redisHandlerService.client.get(key);
 
         if (!userId) {
@@ -179,50 +178,24 @@ export class AuthService {
         };
     }
 
+    async confirmEmail(body) {
+        const key = process.env.CONFIRM_EMAIL_PREFIX + body.token;
+        const userId = await this.redisHandlerService.client.get(key);
 
-    // TODO seperate auth & redis auth logic
-    // REDIS AUTH SERVICE
-    // async validateJWT(payload): Promise<boolean> {
-    //     const userExists = await this.redisHandlerService.userExists(payload.id);
+        if (!userId) {
+            throw new BadRequestException("Token expired");
+        }
 
-    //     if (userExists === false) {
-    //         throw new UnauthorizedException(
-    //             'Wrong JWT & User does not exist in database',
-    //         );
-    //     }
+        const user = await this.userRepo.getUserById(userId)
 
-    //     return true;
-    // }
+        if (!user) {
+            throw new BadRequestException("User no longer exists");
+        }
 
-    // async createDefaultJWT(id: string): Promise<string> {
-    //     const payload = { id };
-    //     try {
-    //         return await this.jwtService.sign(payload);
-    //     } catch (err) {
-    //         throw new Error(`Can not create token: ${err.message}`);
-    //     }
-    // }
+        await this.userRepo.confirmUser(userId)
 
-    // async jwtHandlerService.createJWT(
-    //     payload: any,
-    //     secret: string,
-    //     expiresIn: string,
-    // ): Promise<string> {
-    //     try {
-    //         return await this.jwtService.sign(payload, {
-    //             secret,
-    //             expiresIn,
-    //         });
-    //     } catch (err) {
-    //         throw new Error(`Can not create token: ${err.message}`);
-    //     }
-    // }
+        await this.redisHandlerService.client.del(key)
 
-    // async verifyToken(token, secret): Promise<any> {
-    //     try {
-    //         return await this.jwtService.verify(token, { secret });
-    //     } catch (err) {
-    //         throw new UnauthorizedException(err.message);
-    //     }
-    // }
+        return
+    }
 }

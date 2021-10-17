@@ -19,6 +19,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 import { ForgotPasswordDto } from '../../modules/user/dto/forgotPassword.dto'
 import { ResetPasswordDto } from '../../modules/user/dto/resetPassword.dto'
+import { ConfirmEmailDto } from '../../modules/user/dto/confirmEmail.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -105,5 +106,11 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     async resetPassword(@Body() body: ResetPasswordDto) {
         return this.authService.resetPassword(body)
+    }
+
+    @Post('confirm_email')
+    @HttpCode(HttpStatus.OK)
+    async confirmEmail(@Body() body: ConfirmEmailDto) {
+        return this.authService.confirmEmail(body)
     }
 }

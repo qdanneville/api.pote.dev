@@ -9,6 +9,7 @@ import { JwtHandlerModule } from './jwt/jwt-handler.module'
 import { UserRepository } from '../../modules/user/user.repository';
 import { AuthController } from './auth.controller'
 import { RolesGuard } from './guards/roles.guard';
+import { ConfirmedGuard } from './guards/confirmed.guard';
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import { RolesGuard } from './guards/roles.guard';
         JwtHandlerModule
     ],
     controllers: [AuthController],
-    providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard, UserRepository],
+    providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard, UserRepository, ConfirmedGuard],
     exports: [AuthService]
 })
 export class AuthModule { }

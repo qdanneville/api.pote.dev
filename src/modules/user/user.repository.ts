@@ -52,7 +52,8 @@ export class UserRepository {
 
         return this.entities.user.create({
             data: {
-                ...user
+                ...user,
+                confirmed: false,
             },
         });
     }
@@ -64,6 +65,17 @@ export class UserRepository {
             },
             data: {
                 password,
+            },
+        })
+    }
+
+    async confirmUser(userId: string) {
+        return await this.entities.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                confirmed: true
             },
         })
     }
