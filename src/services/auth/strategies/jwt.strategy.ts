@@ -22,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             throw new UnauthorizedException('Bad xsrf token')
         }
 
-        return { userId: payload.sub, username: payload.username, email: payload.email };
+        //TODO return correct user roles
+        return { userId: payload.sub, username: payload.username, email: payload.email, roles: ['user']};
     }
 }
