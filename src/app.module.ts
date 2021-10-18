@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { PrismaModule } from './database/prisma/prisma.module';
-import { UsersModule } from './modules/user/user.module'
+import { UsersModule } from './domain/user/user.module'
 
 //Auth module
-import { AuthModule } from './services/auth/auth.module'
+// import { AuthModule } from './services/auth/auth.module'
 
 //Mail
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -31,7 +31,7 @@ import config from './configs/config'
       },
     }),
     UsersModule,
-    AuthModule,
+    // AuthModule,
   ],
 })
 export class AppModule { }
