@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { RedisHandlerService } from '../redis/redis-handler.service';
 
 @Injectable()
@@ -11,15 +11,21 @@ export class ConfirmedGuard implements CanActivate {
 
         const { user } = context.switchToHttp().getRequest();
 
-        //TODO get confirmed with redis
-        // const isConfirmed = await this.redisHandlerService.getValue(
-        //     user.userId,
-        //     'confirmed',
-        // );
+        let isConfirmed;
 
-        // if (isConfirmed === 'false') {
-        //     return false
-        // }
+        try {
+            isConfirmed = await this.redisHandlerService.getValue(
+                user.userId,
+                'confirmed',
+            );
+        }
+        catch (err) {
+            isConfirmed = false;
+        }
+
+        if (isConfirmed === 'false') {
+            return false
+        }
 
         return user.confirmed
     }

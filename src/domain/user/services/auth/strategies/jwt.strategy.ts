@@ -1,9 +1,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { RedisHandlerService } from '../redis/redis-handler.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
+    constructor(private redisHandlerService: RedisHandlerService,) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([(request) => {
                 return request?.cookies?.access_token;
@@ -15,8 +16,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(request, payload) {
-        //TODO, verify if user still exists in db with redit
-        const xsrfToken = request?.headers['x-xsrf-token'];
+
+        let xsrfToken;
+        let userFound;
+
+        try {
+            xsrfToken = request?.headers['x-xsrf-token'];
+            userFound = await this.redisHandlerService.userExists(payload.userId)
+        }
+        catch (err) {
+            throw new UnauthorizedException()
+        }
+
+        if (!userFound) {
+            throw new UnauthorizedException('Auth token not found. User is probably not logged in. Please login again.')
+        }
 
         if (!xsrfToken && xsrfToken !== payload.xsrfToken) {
             throw new UnauthorizedException('Bad xsrf token')

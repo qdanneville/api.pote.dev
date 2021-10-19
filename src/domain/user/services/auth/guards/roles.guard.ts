@@ -2,10 +2,14 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { Role } from '../enums/role.enum';
+import { RedisHandlerService } from '../redis/redis-handler.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-    constructor(private reflector: Reflector) { }
+    constructor(
+        private reflector: Reflector,
+        private redisHandlerService: RedisHandlerService,
+    ) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
 
@@ -19,6 +23,18 @@ export class RolesGuard implements CanActivate {
         }
 
         const { user } = context.switchToHttp().getRequest();
-        return requiredRoles.some((role) => user.role?.includes(role));
+        let userRole;
+
+        try {
+            userRole = await this.redisHandlerService.getValue(
+                user.userId,
+                'role',
+            );
+        }
+        catch (err) {
+            return false
+        }
+
+        return requiredRoles.some((role) => userRole?.includes(role));
     }
 }
