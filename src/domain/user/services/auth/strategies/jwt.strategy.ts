@@ -16,13 +16,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(request, payload) {
         //TODO, verify if user still exists in db with redit
-        const xsrfToken = request?.headers['x-xsrf-token'] ? JSON.parse(request?.headers['x-xsrf-token']) : null;
+        const xsrfToken = request?.headers['x-xsrf-token'];
 
-        if (xsrfToken !== payload.xsrfToken) {
+        if (!xsrfToken && xsrfToken !== payload.xsrfToken) {
             throw new UnauthorizedException('Bad xsrf token')
         }
 
-        //TODO return correct user roles
-        return { userId: payload.sub, username: payload.username, email: payload.email, roles: ['admin'], confirmed:payload.confirmed};
+        return { userId: payload.userId, username: payload.username, email: payload.email, role: payload.role, confirmed: payload.confirmed };
     }
 }

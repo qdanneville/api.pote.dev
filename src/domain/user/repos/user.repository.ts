@@ -21,12 +21,20 @@ export class UserRepository {
         return user;
     }
 
-    async getUserByEmail(email: string, skipError: boolean) {
-        const user = await this.entities.user.findUnique({
+    async getUserByEmail(email: string, skipError: boolean = false, withRole: boolean = false) {
+        const user = !withRole ? await this.entities.user.findUnique({
             where: {
                 email,
             },
+        }) : await this.entities.user.findUnique({
+            where: {
+                email,
+            },
+            include: {
+                role: true
+            }
         });
+
         if (!user && !skipError) {
             throw new NotFoundException(email);
         }

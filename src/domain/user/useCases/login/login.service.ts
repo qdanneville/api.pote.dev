@@ -5,6 +5,7 @@ import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
 
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto'
+import { User } from '../../entities/user';
 
 @Injectable()
 export class LoginService {
@@ -16,16 +17,24 @@ export class LoginService {
 
     async login(email: string, password: string) {
 
-        const user = await this.getUserByEmailService.find(email);
+        const user:any = await this.getUserByEmailService.find(email, false, true);
         const passwordsMatch = await bcrypt.compare(password, user.password);
 
         if (!user && !passwordsMatch) {
-            throw new BadRequestException("Email and password missmatch");
+            throw new BadRequestException("Email and/or password missmatch");
         }
 
         const xsrfToken = crypto.randomBytes(64).toString('hex');
 
-        const accessPayload = { username: user.username, email: user.email, sub: user.id, xsrfToken, confirmed: user.confirmed };
+        const accessPayload = {
+            username: user.username,
+            email: user.email,
+            userId: user.id.toString(),
+            xsrfToken,
+            confirmed: user.confirmed,
+            role: user.role?.name
+        };
+
         const accessSecret = process.env.JWT_SECRET
         const expiresIn = process.env.JWT_EXPIRE_IN
 
@@ -45,9 +54,12 @@ export class LoginService {
             refreshIn
         )
 
+        //TODO generate redis function in authRedisService
         const userProperties = new Map<string, string>([
-            ["role", "admin"],
+            ["role", JSON.stringify(user.role?.name)],
+            ["confirmed", JSON.stringify(user.confirmed)],
             ["refresh_token", JSON.stringify(refreshToken)],
+            ["access_token", JSON.stringify(accessToken)],
         ]);
 
         this.redisHandlerService.setUser(user.id, userProperties)

@@ -9,25 +9,32 @@ export class RefreshAccessTokenService {
     constructor(
         private redisHandlerService: RedisHandlerService,
         private jwtHandlerService: JwtHandlerService,
-        private getUserByEmail: GetUserByEmailService,
+        private getUserByEmailService: GetUserByEmailService,
     ) { }
 
     async refreshToken(refreshToken) {
         const verifiedToken = await this.jwtHandlerService.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET)
-
-        const user = await this.getUserByEmail.find(verifiedToken.email);
+        const user: any = await this.getUserByEmailService.find(verifiedToken.email, false, true);
         const keys: string[] = ["refresh_token"];
         const redisUser = await this.redisHandlerService.getFields(user.id, keys);
 
         if (refreshToken !== JSON.parse(redisUser.refresh_token)) {
             throw new UnauthorizedException(
-                'Wrong refresh token',
+                'Refresh token not found',
             );
         }
 
         const xsrfToken = crypto.randomBytes(64).toString('hex');
 
-        const accessPayload = { username: user.username, email: user.email, sub: user.id, xsrfToken };
+        const accessPayload = {
+            username: user.username,
+            email: user.email,
+            userId: user.id.toString(),
+            xsrfToken,
+            confirmed: user.confirmed,
+            role: user.role?.name
+        };
+
         const accessSecret = process.env.JWT_SECRET
         const expiresIn = process.env.JWT_EXPIRE_IN
 
@@ -37,7 +44,7 @@ export class RefreshAccessTokenService {
             expiresIn
         )
 
-        const refreshPayload = { username: user.username, sub: user.id };
+        const refreshPayload = { username: user.username, email: user.email };
         const refreshSecret = process.env.JWT_REFRESH_SECRET
         const refreshIn = process.env.JWT_REFRESH_IN
 
@@ -47,11 +54,12 @@ export class RefreshAccessTokenService {
             refreshIn
         )
 
-        //TODO - Add correct roles
+        //TODO generate redis function in authRedisService
         const userProperties = new Map<string, string>([
-            ["role", "admin"],
+            ["role", JSON.stringify(user.role?.name)],
             ["confirmed", JSON.stringify(user.confirmed)],
             ["refresh_token", JSON.stringify(newRefreshToken)],
+            ["access_token", JSON.stringify(accessToken)],
         ]);
 
         this.redisHandlerService.setUser(user.id, userProperties)

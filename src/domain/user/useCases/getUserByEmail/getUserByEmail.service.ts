@@ -5,7 +5,7 @@ import { UserRepository } from '../../repos/user.repository';
 export class GetUserByEmailService {
     constructor(private readonly usersRepository: UserRepository) { }
 
-    find(email: string, skipError = false) {
-        return this.usersRepository.getUserByEmail(email, skipError);
+    find(email: string, skipError = false, withRole = false) {
+        return this.usersRepository.getUserByEmail(email, skipError, withRole);
     }
 }

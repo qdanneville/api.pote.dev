@@ -17,6 +17,7 @@ import { ConfirmedGuard } from './services/auth/guards/confirmed.guard';
 import { CreateUserModule } from './useCases/createUser/createUser.module'
 import { ConfirmEmailModule } from './useCases/confirmEmail/confirmEmail.module';
 import { LoginModule } from './useCases/login/login.module';
+import { LogoutModule } from './useCases/logout/logout.module';
 import { GetCurrentUserModule } from './useCases/getCurrentUser/getCurrentUser.module'
 import { ForgotPasswordModule } from './useCases/forgotPassword/forgotPassword.module';
 import { ResetPasswordModule } from './useCases/resetPassword/resetPassword.module';
@@ -30,7 +31,6 @@ import { GetUsersModule } from './useCases/getUsers/getUsers.module'
 import { UserRepository } from './repos/user.repository';
 
 @Module({
-
   imports: [
     PassportModule,
     RedisHandlerModule,
@@ -38,12 +38,13 @@ import { UserRepository } from './repos/user.repository';
     CreateUserModule,
     ConfirmEmailModule,
     LoginModule,
+    LogoutModule,
     GetCurrentUserModule,
     ForgotPasswordModule,
     ResetPasswordModule,
     GetUserByEmailModule,
     GetUsersModule,
-    RefreshAccessTokenModule
+    RefreshAccessTokenModule,
   ],
   providers: [JwtStrategy, RolesGuard, UserRepository, ConfirmedGuard],
 })

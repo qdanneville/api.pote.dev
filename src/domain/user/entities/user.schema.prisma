@@ -1,5 +1,5 @@
 model User {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   firstname String
   lastname  String
   username  String
@@ -7,5 +7,8 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  confirmed Boolean @default(false)
+  confirmed Boolean  @default(false)
+
+  role   Role? @relation(fields: [roleId], references: [id])
+  roleId Int? @default(1)
 }

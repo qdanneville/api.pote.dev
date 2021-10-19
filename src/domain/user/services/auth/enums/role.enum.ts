@@ -1,4 +1,5 @@
+//Make sure to maintain the same Enum type as the database
 export enum Role {
-    User = 'user',
-    Admin = 'admin',
-  }
+  user = 'user',
+  admin = 'admin',
+}

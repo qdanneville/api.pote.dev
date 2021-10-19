@@ -11,7 +11,7 @@ export class GetUsersController {
     constructor(private readonly getUsers: GetUsers) { }
 
     @Get('/')
-    @Roles(Role.Admin)
+    @Roles(Role.user, Role.admin)
     @UseGuards(JwtAuthGuard, RolesGuard, ConfirmedGuard)
     async GetAllUsers(@Request() req) {
         return this.getUsers.find()

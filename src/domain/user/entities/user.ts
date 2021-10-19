@@ -1,4 +1,5 @@
 import { MinLength, MaxLength, IsString, IsDefined, IsEmail, IsOptional } from 'class-validator'
+import { Role } from './role'
 
 interface UserProps {
     id: string;
@@ -10,13 +11,13 @@ interface UserProps {
     accessToken?: string;
     refreshToken?: string;
     lastLogin?: Date;
+    role: Role
 }
 
 export class User implements UserProps {
     //-------------FIELD-------------
     @IsString()
     public id: string
-
 
     //-------------FIELD-------------
     @IsOptional()
@@ -64,14 +65,17 @@ export class User implements UserProps {
     @IsString()
     public lastLogin: Date
 
+    public role: Role
+
     constructor(props: UserProps) {
-        const { firstname, lastname, username, email, password } = props;
+        const { firstname, lastname, username, email, password, role } = props;
 
         this.firstname = firstname;
         this.lastname = lastname;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public setAccessToken(accessToken: string, refreshToken: string): void {
