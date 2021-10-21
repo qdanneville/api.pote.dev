@@ -3,7 +3,8 @@ export interface Config {
     cors: CorsConfig;
     swagger: SwaggerConfig;
     security: SecurityConfig;
-    redis: RedisConfig
+    redis: RedisConfig;
+    github: GithubConfig
 }
 
 export interface NestConfig {
@@ -12,7 +13,7 @@ export interface NestConfig {
 
 export interface CorsConfig {
     enabled: boolean;
-    origin:string;
+    origin: string;
     credentials: boolean;
 }
 
@@ -37,4 +38,14 @@ export interface RedisConfig {
     port: number;
     db: number;
     password: string;
+}
+
+export interface GithubConfig {
+    accessTokenUri: string,
+    userUri: string,
+    userEmailUri: string,
+    clientId: string,
+    secretId: string,
+    redirectUri: string,
+    scope: string
 }

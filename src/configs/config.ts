@@ -29,6 +29,15 @@ const config: Config = {
         db: parseInt(process.env.REDIS_DB),
         password: process.env.REDIS_PASSWORD,
     },
+    github: {
+        accessTokenUri:process.env.GITHUB_GET_ACCESS_TOKEN_URI,
+        userUri:process.env.GITHUB_GET_USER_URI,
+        userEmailUri:process.env.GITHUB_GET_USER_EMAIL_URI,
+        clientId: process.env.GITHUB_ID,
+        secretId: process.env.GITHUB_SECRET,
+        redirectUri: process.env.OAUTH_REDIRECT_URI,
+        scope: process.env.GITHUB_SCOPE
+    }
 };
 
 export default (): Config => config;

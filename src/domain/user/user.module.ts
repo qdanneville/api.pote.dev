@@ -23,6 +23,9 @@ import { ForgotPasswordModule } from './useCases/forgotPassword/forgotPassword.m
 import { ResetPasswordModule } from './useCases/resetPassword/resetPassword.module';
 import { RefreshAccessTokenModule } from './useCases/refreshAccessToken/refreshAccessToken.module';
 
+//Oauth
+import { LoginGithubModule } from './useCases/loginGithub/loginGithub.module';
+
 //User
 import { GetUserByEmailModule } from './useCases/getUserByEmail/getUserByEmail.module'
 import { GetUsersModule } from './useCases/getUsers/getUsers.module'
@@ -38,6 +41,7 @@ import { UserRepository } from './repos/user.repository';
     CreateUserModule,
     ConfirmEmailModule,
     LoginModule,
+    LoginGithubModule,
     LogoutModule,
     GetCurrentUserModule,
     ForgotPasswordModule,
