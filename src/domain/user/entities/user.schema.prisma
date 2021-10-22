@@ -1,10 +1,10 @@
 model User {
   id        String   @id @default(uuid())
-  firstname String
-  lastname  String
+  firstname String?
+  lastname  String?
   username  String
   email     String   @unique
-  password  String
+  password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   confirmed Boolean  @default(false)

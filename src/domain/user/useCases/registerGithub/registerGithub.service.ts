@@ -7,18 +7,19 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto'
 import { User } from '../../entities/user';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserService } from '../createUser/createUser.service';
 
 @Injectable()
-export class LoginGithubService {
+export class RegisterGithubService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
-        private jwtHandlerService: JwtHandlerService,
-        private configService: ConfigService
+        private createUserService: CreateUserService
     ) { }
 
-    async login(body) {
+    async register(user) {
         try {
-            console.log('ready to login github user', body)
+            const userInDb = this.createUserService.create(user, true);
+
+            console.log('user id db ?', userInDb);
         }
         catch (err) {
 
