@@ -1,18 +1,16 @@
-import { IsNotEmpty, IsEmail, IsString, IsBoolean, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsArray } from 'class-validator';
 
 export class RegisterGithubDto {
-    @IsEmail()
-    @IsNotEmpty()
-    email: string
-
     @IsString()
     @IsNotEmpty()
     username: string
 
-    @IsBoolean()
+    @IsString()
     @IsNotEmpty()
-    confirmed: boolean
+    formToken: string
 
     @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
     goals: string[]
 }

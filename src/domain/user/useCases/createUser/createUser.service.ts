@@ -75,7 +75,7 @@ export class CreateUserService {
         }
         catch (err) {
             console.log(err);
-            throw new BadRequestException("Registration failed");
+            throw new BadRequestException(err.message);
         }
         //TODO do we register a user if the mail isn't set ?
         return user

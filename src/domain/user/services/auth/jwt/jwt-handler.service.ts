@@ -19,13 +19,21 @@ export class JwtHandlerService {
     async createJWT(
         payload: any,
         secret: string,
-        expiresIn: string,
+        expiresIn?: string,
     ): Promise<string> {
         try {
-            return await this.jwtService.sign(payload, {
-                secret,
-                expiresIn,
-            });
+            let token;
+
+            expiresIn
+                ? token = await this.jwtService.sign(payload, {
+                    secret,
+                    expiresIn,
+                })
+                : token = await this.jwtService.sign(payload, {
+                    secret,
+                });
+
+            return token
         } catch (err) {
             throw new Error(`Can not create token: ${err.message}`);
         }

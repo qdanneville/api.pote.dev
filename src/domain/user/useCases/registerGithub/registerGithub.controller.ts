@@ -18,11 +18,22 @@ export class RegisterGithubController {
     @Post()
     @HttpCode(HttpStatus.OK)
     async login(@Body() body: RegisterGithubDto, @Request() req, @Response() res) {
-        try {
-            return this.registerGithubService.register(body)
-        }
-        catch (err) {
-            throw new UnauthorizedException(err);
-        }
+        const result = await this.registerGithubService.register(body)
+
+        res.cookie('access_token', result.accessToken, {
+            httpOnly: true,
+            // secure: true,
+        });
+
+        res.cookie('refresh_token', result.refreshToken, {
+            httpOnly: true,
+            // secure: true,
+        });
+
+        res.json({
+            accessTokenExpiresIn: result.expiresIn,
+            refreshTokenExpiresIn: result.refreshIn,
+            xsrfToken: result.xsrfToken
+        });
     }
 }

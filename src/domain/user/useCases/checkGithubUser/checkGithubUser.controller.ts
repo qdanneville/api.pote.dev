@@ -6,7 +6,6 @@ import {
     Post,
     Request,
     Response,
-    UnauthorizedException
 } from '@nestjs/common';
 import { CheckGithubUserService } from './checkGithubUser.service';
 
@@ -14,20 +13,32 @@ import { CheckGithubUserDto } from '../../dtos/checkGithubUser.dto';
 
 @Controller('oauth/check/github')
 export class CheckGithubUserController {
-    constructor(private readonly CheckGithubUserService: CheckGithubUserService) { }
+    constructor(private readonly checkGithubUserService: CheckGithubUserService) { }
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    async login(@Query() query: CheckGithubUserDto, @Request() req) {
-        try {
-            console.log('query', query)
+    async login(@Query() query: CheckGithubUserDto, @Request() req, @Response() res) {
+        const { code } = query;
+        const result: any = await this.checkGithubUserService.check(code)
 
-            const { code } = query;
+        if (result.status === "login" && result.data) {
+            res.cookie('access_token', result.data.accessToken, {
+                httpOnly: true,
+                // secure: true,
+            });
 
-            return this.CheckGithubUserService.check(code)
-        }
-        catch (err) {
-            throw new UnauthorizedException(err);
+            res.cookie('refresh_token', result.data.refreshToken, {
+                httpOnly: true,
+                // secure: true,
+            });
+
+            res.json({
+                accessTokenExpiresIn: result.data.expiresIn,
+                refreshTokenExpiresIn: result.data.refreshIn,
+                xsrfToken: result.data.xsrfToken
+            });
+        } else if (result.status === "register") {
+            res.json(result.data)
         }
     }
 }

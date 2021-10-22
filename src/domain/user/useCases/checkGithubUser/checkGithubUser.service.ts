@@ -8,6 +8,7 @@ import * as crypto from 'crypto'
 import { User } from '../../entities/user';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../../repos/user.repository';
+import { LoginGithubService } from '../loginGithub/loginGithub.service';
 
 @Injectable()
 export class CheckGithubUserService {
@@ -15,7 +16,8 @@ export class CheckGithubUserService {
         private redisHandlerService: RedisHandlerService,
         private jwtHandlerService: JwtHandlerService,
         private userRepository: UserRepository,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private loginGithubService: LoginGithubService
     ) { }
 
     async check(code) {
@@ -53,29 +55,46 @@ export class CheckGithubUserService {
             const emailObject = getUserEmailInfo?.data?.filter(email => {
                 return email.primary
             })
+
+            const userEmail = emailObject[0].email as string
             const confirmed = emailObject[0]?.verified
 
-            const user = {
-                username,
-                email: emailObject[0].email as string,
-                confirmed
-            }
-
-            console.log(user);
-
-            const userExists = await this.userRepository.userExists(user.email)
+            const userExists = await this.userRepository.userExists(userEmail)
 
             if (userExists) {
-                console.log('create access & refresh redis logic')
+                const user = await this.userRepository.getUserByEmail(userEmail);
+
+                return { data: await this.loginGithubService.login(user), status: 'login' };
             } else {
-                console.log('register user', user)
-                return user
+                const user = {
+                    username,
+                    email: userEmail,
+                    confirmed,
+                    formToken: null
+                }
+
+                const tokenPayload = { email: user.email, confirmed: user.confirmed };
+                const tokenSecret = process.env.JWT_OAUTH_SECRET
+
+                const oauthToken = await this.jwtHandlerService.createJWT(
+                    tokenPayload,
+                    tokenSecret
+                )
+
+                const key = process.env.JWT_OAUTH_TOKEN_PREFIX + oauthToken
+
+                await this.redisHandlerService.client.set(
+                    key,
+                    user.email,
+                )
+
+                user.formToken = oauthToken
+
+                return { data: user, status: 'register' }
             }
         }
         catch (err) {
-            console.log(err);
-            console.log('api call github err :', err.message);
-            return new BadRequestException(err.message)
+            throw new BadRequestException(err.message)
         }
     }
 }

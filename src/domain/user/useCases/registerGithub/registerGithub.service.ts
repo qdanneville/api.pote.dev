@@ -8,21 +8,45 @@ import * as crypto from 'crypto'
 import { User } from '../../entities/user';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserService } from '../createUser/createUser.service';
+import { LoginGithubService } from '../loginGithub/loginGithub.service';
 
 @Injectable()
 export class RegisterGithubService {
     constructor(
-        private createUserService: CreateUserService
+        private redisHandlerService: RedisHandlerService,
+        private createUserService: CreateUserService,
+        private loginGithubService: LoginGithubService,
+        private jwtHandlerService: JwtHandlerService
     ) { }
 
-    async register(user) {
+    async register(body) {
         try {
-            const userInDb = this.createUserService.create(user, true);
+            const decodedToken = await this.jwtHandlerService.verifyToken(body.formToken, process.env.JWT_OAUTH_SECRET)
 
-            console.log('user id db ?', userInDb);
+            const key = process.env.JWT_OAUTH_TOKEN_PREFIX + body.formToken;
+            const userEmail = await this.redisHandlerService.client.get(key);
+
+            if (!userEmail) {
+                throw new BadRequestException("Token expired");
+            }
+
+            if (userEmail !== decodedToken.email) {
+                throw new BadRequestException("Wrong token or already used");
+            }
+
+            const userprops = {
+                username: body.username,
+                email: decodedToken.email,
+                confirmed: decodedToken.confirmed
+            }
+            const user = await this.createUserService.create(userprops, true);
+            
+            await this.redisHandlerService.client.del(key)
+
+            return this.loginGithubService.login(user)
         }
         catch (err) {
-
+            throw new BadRequestException(err.message);
         }
     }
 }

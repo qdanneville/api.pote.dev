@@ -58,8 +58,6 @@ export class UserRepository {
             throw new BadRequestException('user already exists');
         }
 
-        console.log('create user props', user);
-
         return this.entities.user.create({
             data: {
                 ...user,
