@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser'
+import * as morgan from 'morgan'
 
 import {
   CorsConfig,
@@ -46,6 +47,9 @@ async function bootstrap() {
       credentials: corsConfig.credentials
     });
   }
+
+  //Logger
+  app.use(morgan('combined'))
 
   await app.listen(process.env.PORT || nestConfig.port || 3000);
   console.log(`Nest APP is running on port : ${process.env.PORT}`)
