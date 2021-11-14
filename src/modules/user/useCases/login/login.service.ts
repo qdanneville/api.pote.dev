@@ -4,71 +4,73 @@ import { RedisHandlerService } from '../../services/auth/redis/redis-handler.ser
 import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
 
 import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto'
+
+import { UserEmail } from '../../domain/userEmail';
+import { UserPassword } from '../../domain/userPassword';
+import { LoginDTO } from './login.dto';
+import { User } from '../../domain/user';
+import { UserRepository } from '../../repos/user.repository';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
 
 @Injectable()
 export class LoginService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
-        private jwtHandlerService: JwtHandlerService,
-        private getUserByEmailService: GetUserByEmailService,
+        private readonly redisAuthService: RedisAuthService,
+        private readonly userRepository: UserRepository,
     ) { }
 
-    async login(email: string, password: string) {
+    async login(req: LoginDTO) {
 
-        const user:any = await this.getUserByEmailService.find(email, false, true);
-        const passwordsMatch = await bcrypt.compare(password, user.password);
+        let user: User
 
-        if (!user && !passwordsMatch) {
-            throw new BadRequestException("Email and/or password missmatch");
+        try {
+            const emailDomain = UserEmail.create(req.email)
+            const passwordDomain = UserPassword.create({ value: req.password });
+
+            const email = emailDomain.value;
+            const password = passwordDomain.value
+
+            user = await this.userRepository.getUserByEmail(email)
+            const passwordsMatch = await user.password.comparePassword(password);
+
+            console.log('user ?', user)
+
+            if (!user && !passwordsMatch) {
+                throw new BadRequestException("Email and/or password missmatch");
+            }
+
+            const xsrfToken = this.redisAuthService.createXsrfToken()
+
+            //CARE
+            //We might want the role name here
+            //TO CHECK
+            const accessPayload = {
+                username: user.username.value,
+                email: user.email.value,
+                userId: user.id.toString(),
+                xsrfToken,
+                isEmailVerified: user.isEmailVerified,
+                isAdmin: user.isAdmin,
+                roleId: user.roleId
+            };
+            const accessToken = await this.redisAuthService.createAccessToken(accessPayload)
+
+            const refreshPayload = { username: user.username.value, email: user.email.value };
+            const refreshToken = await this.redisAuthService.createRefreshToken(refreshPayload)
+
+            user.setAccessToken(accessToken, refreshToken)
+
+            await this.redisAuthService.addRedisUser(user)
+
+            return {
+                accessToken,
+                refreshToken,
+                xsrfToken
+            };
         }
-
-        const xsrfToken = crypto.randomBytes(64).toString('hex');
-
-        const accessPayload = {
-            username: user.username,
-            email: user.email,
-            userId: user.id.toString(),
-            xsrfToken,
-            confirmed: user.confirmed,
-            role: user.role?.name
-        };
-
-        const accessSecret = process.env.JWT_SECRET
-        const expiresIn = process.env.JWT_EXPIRE_IN
-
-        const accessToken = await this.jwtHandlerService.createJWT(
-            accessPayload,
-            accessSecret,
-            expiresIn
-        )
-
-        const refreshPayload = { username: user.username, email: user.email };
-        const refreshSecret = process.env.JWT_REFRESH_SECRET
-        const refreshIn = process.env.JWT_REFRESH_IN
-
-        const refreshToken = await this.jwtHandlerService.createJWT(
-            refreshPayload,
-            refreshSecret,
-            refreshIn
-        )
-
-        //TODO generate redis function in authRedisService
-        const userProperties = new Map<string, string>([
-            ["role", JSON.stringify(user.role?.name)],
-            ["confirmed", JSON.stringify(user.confirmed)],
-            ["refresh_token", JSON.stringify(refreshToken)],
-            ["access_token", JSON.stringify(accessToken)],
-        ]);
-
-        this.redisHandlerService.setUser(user.id, userProperties)
-
-        return {
-            accessToken,
-            expiresIn,
-            refreshToken,
-            refreshIn,
-            xsrfToken
-        };
+        catch (err) {
+            console.log('err')
+            throw new BadRequestException(err.toString())
+        }
     }
 }

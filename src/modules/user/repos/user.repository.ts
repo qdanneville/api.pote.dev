@@ -25,7 +25,8 @@ export class UserRepository {
     }
 
     async getUserByEmail(email: string, skipError: boolean = false, withRole: boolean = false) {
-        const user = !withRole ? await this.entities.user.findUnique({
+        const UserModel = this.entities.user
+        const user = !withRole ? await UserModel.findUnique({
             where: {
                 email,
             },
@@ -41,7 +42,8 @@ export class UserRepository {
         if (!user && !skipError) {
             throw new NotFoundException(email);
         }
-        return user;
+
+        return UserMap.toDomain(user);
     }
 
     async exists(email: UserEmail) {

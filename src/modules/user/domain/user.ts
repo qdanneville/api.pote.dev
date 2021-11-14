@@ -3,11 +3,16 @@ import { UniqueEntityID } from "../../../core/domain/UniqueEntityID";
 import { UserId } from "./userId";
 import { UserEmail } from "./userEmail";
 import { UserUsername } from "./userUsername";
-import { UserCreatedEvent } from "./events/userCreatedEvent";
 import { UserRole } from "./userRole";
 import { UserPassword } from "./userPassword";
 import { AccessToken } from "./accessToken";
 import { RefreshToken } from './refreshToken'
+
+//Events
+import { UserCreatedEvent } from "./events/userCreatedEvent";
+import { UserLoggedIn } from "./events/userLoggedIn"
+import { UserDeleted } from "./events/userDeleted"
+
 
 interface UserProps {
     email: UserEmail;
@@ -17,7 +22,9 @@ interface UserProps {
     isAdmin?: boolean;
     accessToken?: AccessToken;
     refreshToken?: RefreshToken;
-    role: UserRole
+    role: UserRole;
+    lastLogin?: Date;
+    isDeleted?: boolean
 }
 
 export class User extends AggregateRoot<UserProps> {
@@ -49,6 +56,22 @@ export class User extends AggregateRoot<UserProps> {
         return this.props.isAdmin;
     }
 
+    get isDeleted(): boolean {
+        return this.props.isDeleted;
+    }
+
+    get accessToken(): AccessToken {
+        return this.props.accessToken
+    }
+
+    get refreshToken(): RefreshToken {
+        return this.props.refreshToken
+    }
+
+    get role(): UserRole {
+        return this.props.role
+    }
+
     get roleName(): string {
         return this.props.role.name
     }
@@ -57,9 +80,28 @@ export class User extends AggregateRoot<UserProps> {
         return this.props.role.roleId
     }
 
+    get lastLogin(): Date {
+        return this.props.lastLogin;
+    }
+
     private constructor(props: UserProps, id?: UniqueEntityID) {
         super(props, id);
     }
+
+    public setAccessToken(accessToken: AccessToken, refreshToken: RefreshToken): void {
+        this.addDomainEvent(new UserLoggedIn(this));
+        this.props.accessToken = accessToken;
+        this.props.refreshToken = refreshToken;
+        this.props.lastLogin = new Date();
+    }
+
+    public delete(): void {
+        if (!this.props.isDeleted) {
+            this.addDomainEvent(new UserDeleted(this));
+            this.props.isDeleted = true;
+        }
+    }
+
 
     public static create(props: UserProps, id?: UniqueEntityID): User {
 

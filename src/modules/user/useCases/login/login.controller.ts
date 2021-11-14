@@ -8,7 +8,7 @@ import {
     Response,
     UnauthorizedException
 } from '@nestjs/common';
-import { LoginDto } from '../../dtos/login.dto';
+import { LoginDTO } from './login.dto';
 import { LoginService } from './login.service';
 
 
@@ -18,27 +18,25 @@ export class LoginController {
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    async login(@Body() body: LoginDto, @Request() req, @Response() res) {
+    async login(@Body() body: LoginDTO, @Request() req, @Response() res) {
         try {
-            const { email, password } = body
+            const result = await this.loginService.login(body);
 
-            const result = await this.loginService.login(email, password);
+            if (result.accessToken && result.refreshToken) {
+                res.cookie('access_token', result.accessToken, {
+                    httpOnly: true,
+                    // secure: true,
+                });
 
-            res.cookie('access_token', result.accessToken, {
-                httpOnly: true,
-                // secure: true,
-            });
+                res.cookie('refresh_token', result.refreshToken, {
+                    httpOnly: true,
+                    // secure: true,
+                });
 
-            res.cookie('refresh_token', result.refreshToken, {
-                httpOnly: true,
-                // secure: true,
-            });
-
-            res.json({
-                accessTokenExpiresIn: result.expiresIn,
-                refreshTokenExpiresIn: result.refreshIn,
-                xsrfToken: result.xsrfToken
-            });
+                res.json({
+                    xsrfToken: result.xsrfToken
+                });
+            }
         }
         catch (err) {
             throw new UnauthorizedException(err);

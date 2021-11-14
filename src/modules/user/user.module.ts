@@ -5,6 +5,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtHandlerModule } from './services/auth/jwt/jwt-handler.module';
 import { RedisHandlerModule } from './services/auth/redis/redis-handler.module';
 
+//Core auth logic
+import { RedisAuthModule } from './services/auth/redisAuth.module';
+
 //Strategies
 import { JwtStrategy } from './services/auth/strategies/jwt.strategy';
 
@@ -41,6 +44,7 @@ import { RoleRepository } from './repos/role.repository';
     PassportModule,
     RedisHandlerModule,
     JwtHandlerModule,
+    RedisAuthModule,
     CreateUserModule,
     ConfirmEmailModule,
     LoginModule,

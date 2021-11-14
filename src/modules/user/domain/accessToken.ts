@@ -3,8 +3,9 @@ export interface AccessTokenClaims {
     isEmailVerified: boolean;
     email: string;
     username: string;
-    adminUser: boolean;
-    roleId: number
+    isAdmin: boolean;
+    roleId: number,
+    xsrfToken: string
 };
 
 export type AccessToken = string;
