@@ -4,15 +4,19 @@ import {
     UseGuards,
     Request,
 } from '@nestjs/common';
-
-
+import { GetUserByEmailDTO } from '../getUserByEmail/getUserByEmail.dto';
 import { JwtAuthGuard } from '../../services/auth/guards/jwt-auth.guard';
+import { GetUserByEmailService } from '../getUserByEmail/getUserByEmail.service';
+import { UserMap } from '../../mappers/userMap';
+import { userResponseDTO } from '../../dtos/user.dto';
 
 @Controller('auth/me')
 export class GetCurrentUserController {
+    constructor(private readonly getUserByEmailService: GetUserByEmailService) { }
+
     @Get()
     @UseGuards(JwtAuthGuard)
-    me(@Request() req) {
-        return req.user;
+    async me(@Request() req) {
+        return UserMap.toResponse(await this.getUserByEmailService.find(req.user as GetUserByEmailDTO))
     }
 }

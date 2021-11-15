@@ -27,11 +27,10 @@ export class LoginService {
             const emailDomain = UserEmail.create(req.email)
             const passwordDomain = UserPassword.create({ value: req.password });
 
-            const email = emailDomain.value;
             const password = passwordDomain.value
 
             try {
-                user = await this.userRepository.getUserByEmail(email)
+                user = await this.userRepository.getUserByEmail(emailDomain)
             }
             catch (err) {
                 throw new BadRequestException("Email and/or password missmatch");

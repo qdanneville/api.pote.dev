@@ -1,6 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GetUserByEmailService } from './getUserByEmail.service';
-import { GetUserByEmailDto } from '../../dtos/getUserByEmail.dto'
+import { GetUserByEmailDTO } from './getUserByEmail.dto'
+import { UserMap } from '../../mappers/userMap';
 
 import {
     ApiOperation,
@@ -14,9 +15,9 @@ export class GetUserByEmailController {
     constructor(private readonly getUserByEmailService: GetUserByEmailService) { }
 
     @ApiOperation({ summary: 'Get user with an email' })
-    @ApiParam({ name: 'email'})
+    @ApiParam({ name: 'email' })
     @Get('email/:email')
-    async getUserByEmail(@Param() params: GetUserByEmailDto) {
-        return this.getUserByEmailService.find(params.email)
+    async getUserByEmail(@Param() params: GetUserByEmailDTO) {
+        return UserMap.toResponse(await this.getUserByEmailService.find(params))
     }
 }

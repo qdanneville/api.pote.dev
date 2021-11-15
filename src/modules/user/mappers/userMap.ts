@@ -4,6 +4,7 @@ import { UserPassword } from '../domain/userPassword';
 import { UserUsername } from '../domain/userUsername';
 import { UserRole } from '../domain/userRole';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+import { userResponseDTO } from '../dtos/user.dto';
 
 export class UserMap {
     public static async toPersistence(user: User): Promise<any> {
@@ -44,6 +45,20 @@ export class UserMap {
         }, new UniqueEntityID(raw.id));
 
         return userDomain ? userDomain : null;
+    }
+
+    public static toResponse(user: User): userResponseDTO {
+        console.log(user);
+
+        const userReponse = {
+            username: user.username.value,
+            email: user.email.value,
+            lastLogin: user.lastLogin,
+            isEmailVerified: user.isEmailVerified,
+            role: user.role.name
+        }
+
+        return userReponse
     }
 }
 

@@ -5,6 +5,8 @@ import axios from 'axios'
 
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto'
+
+import { UserEmail } from '../../domain/userEmail';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../../repos/user.repository';
 import { LoginGithubService } from '../loginGithub/loginGithub.service';
@@ -63,7 +65,8 @@ export class CheckGithubUserService {
             const userExists = false
 
             if (userExists) {
-                const user = await this.userRepository.getUserByEmail(userEmail);
+                const emailDomain = UserEmail.create(userEmail)
+                const user = await this.userRepository.getUserByEmail(emailDomain);
 
                 return { data: await this.loginGithubService.login(user), status: 'login' };
             } else {

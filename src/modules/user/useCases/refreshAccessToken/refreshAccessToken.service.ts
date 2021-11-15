@@ -14,7 +14,7 @@ export class RefreshAccessTokenService {
 
     async refreshToken(refreshToken) {
         const verifiedToken = await this.jwtHandlerService.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET)
-        const user: any = await this.getUserByEmailService.find(verifiedToken.email, false, true);
+        const user: any = await this.getUserByEmailService.find(verifiedToken.email);
         const keys: string[] = ["refresh_token"];
         const redisUser = await this.redisHandlerService.getFields(user.id, keys);
 

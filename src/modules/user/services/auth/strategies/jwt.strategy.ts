@@ -32,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             throw new UnauthorizedException('Auth token not found. User is probably not logged in. Please login again.')
         }
 
-        if (!xsrfToken && xsrfToken !== payload.xsrfToken) {
+        if (!xsrfToken || xsrfToken !== payload.xsrfToken) {
             throw new UnauthorizedException('Bad xsrf token')
         }
 
