@@ -6,7 +6,7 @@ const config: Config = {
     },
     cors: {
         enabled: true,
-        origin: 'http://localhost:1234',
+        origin: 'http://localhost:3001',
         credentials: true
     },
     swagger: {

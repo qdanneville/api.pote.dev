@@ -26,11 +26,7 @@ export class UserRepository {
 
     async getUserByEmail(email: string, skipError: boolean = false, withRole: boolean = false) {
         const UserModel = this.entities.user
-        const user = !withRole ? await UserModel.findUnique({
-            where: {
-                email,
-            },
-        }) : await this.entities.user.findUnique({
+        const user = await UserModel.findUnique({
             where: {
                 email,
             },

@@ -32,10 +32,9 @@ export class RedisAuthService {
             email: props.email,
             username: props.email,
             isAdmin: props.isAdmin,
-            roleId: props.roleId,
+            roleName: props.roleName,
             xsrfToken: props.xsrfToken
         }
-
 
         return this.jwtHandlerService.createJWT(
             claims,

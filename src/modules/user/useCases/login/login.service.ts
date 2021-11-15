@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, ConsoleLogger } from '@nestjs/common';
 import { GetUserByEmailService } from '../../useCases/getUserByEmail/getUserByEmail.service';
 import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
 import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
@@ -30,16 +30,24 @@ export class LoginService {
             const email = emailDomain.value;
             const password = passwordDomain.value
 
-            user = await this.userRepository.getUserByEmail(email)
+            try {
+                user = await this.userRepository.getUserByEmail(email)
+            }
+            catch (err) {
+                throw new BadRequestException("Email and/or password missmatch");
+            }
+
             const passwordsMatch = await user.password.comparePassword(password);
 
-            console.log('user ?', user)
-
-            if (!user && !passwordsMatch) {
+            if (!passwordsMatch) {
                 throw new BadRequestException("Email and/or password missmatch");
             }
 
             const xsrfToken = this.redisAuthService.createXsrfToken()
+
+            console.log('user :', user);
+            console.log('user role :', user.role);
+            console.log('user role id :', user.role.roleId);
 
             //CARE
             //We might want the role name here
@@ -51,9 +59,13 @@ export class LoginService {
                 xsrfToken,
                 isEmailVerified: user.isEmailVerified,
                 isAdmin: user.isAdmin,
-                roleId: user.roleId
+                roleName: user.role.name,
             };
+
+            console.log('access payload', accessPayload);
             const accessToken = await this.redisAuthService.createAccessToken(accessPayload)
+
+            console.log('access token', accessToken);
 
             const refreshPayload = { username: user.username.value, email: user.email.value };
             const refreshToken = await this.redisAuthService.createRefreshToken(refreshPayload)

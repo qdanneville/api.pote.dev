@@ -2,6 +2,7 @@ import { User } from '../domain/user';
 import { UserEmail } from '../domain/userEmail';
 import { UserPassword } from '../domain/userPassword';
 import { UserUsername } from '../domain/userUsername';
+import { UserRole } from '../domain/userRole';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 
 export class UserMap {
@@ -30,8 +31,7 @@ export class UserMap {
         const userNameDomain = await UserUsername.create(raw.username);
         const userPasswordDomain = UserPassword.create({ value: raw.password, hashed: true });
         const userEmailDomain = UserEmail.create(raw.email);
-
-        console.log('user before domain', raw);
+        const userRole = UserRole.create(raw.role);
 
         const userDomain = User.create({
             username: userNameDomain,
@@ -40,7 +40,7 @@ export class UserMap {
             isEmailVerified: raw.isEmailVerified,
             password: userPasswordDomain,
             email: userEmailDomain,
-            role: raw.roleId
+            role: userRole
         }, new UniqueEntityID(raw.id));
 
         return userDomain ? userDomain : null;

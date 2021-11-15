@@ -4,7 +4,7 @@ export interface AccessTokenClaims {
     email: string;
     username: string;
     isAdmin: boolean;
-    roleId: number,
+    roleName: string,
     xsrfToken: string
 };
 

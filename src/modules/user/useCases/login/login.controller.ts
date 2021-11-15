@@ -19,27 +19,22 @@ export class LoginController {
     @Post()
     @HttpCode(HttpStatus.OK)
     async login(@Body() body: LoginDTO, @Request() req, @Response() res) {
-        try {
-            const result = await this.loginService.login(body);
+        const result = await this.loginService.login(body);
 
-            if (result.accessToken && result.refreshToken) {
-                res.cookie('access_token', result.accessToken, {
-                    httpOnly: true,
-                    // secure: true,
-                });
+        if (result.accessToken && result.refreshToken) {
+            res.cookie('access_token', result.accessToken, {
+                httpOnly: true,
+                // secure: true,
+            });
 
-                res.cookie('refresh_token', result.refreshToken, {
-                    httpOnly: true,
-                    // secure: true,
-                });
+            res.cookie('refresh_token', result.refreshToken, {
+                httpOnly: true,
+                // secure: true,
+            });
 
-                res.json({
-                    xsrfToken: result.xsrfToken
-                });
-            }
-        }
-        catch (err) {
-            throw new UnauthorizedException(err);
+            res.json({
+                xsrfToken: result.xsrfToken
+            });
         }
     }
 }

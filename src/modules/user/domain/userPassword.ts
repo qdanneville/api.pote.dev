@@ -13,6 +13,10 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
         return this.props.value;
     }
 
+    get hashed(): boolean {
+        return this.props.hashed;
+    }
+
     private constructor(props) {
         super(props)
     }
@@ -26,7 +30,7 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
         let hashed: string;
         if (this.isAlreadyHashed()) {
             hashed = this.props.value;
-            return this.bcryptCompare(plainTextPassword, hashed);
+            return await this.bcryptCompare(plainTextPassword, hashed);
         } else {
             return this.props.value === plainTextPassword;
         }
