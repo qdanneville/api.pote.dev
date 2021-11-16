@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { AccessToken, AccessTokenClaims } from "../../domain/accessToken";
 import { RefreshToken, RefreshTokenClaims } from "../../domain/refreshToken";
@@ -79,8 +79,36 @@ export class RedisAuthService {
         const expiresIn = this.configService.get<string>('security.verifyEmailTokenExpiresIn')
         const userId = props.userId.toString()
 
-        console.log(expiresIn);
-
         return this.redisHandlerService.client.set(key, userId, 'ex', expiresIn)
+    }
+
+    public async getUserIdFromEmailVerificationToken(emailVerificationToken: string): Promise<string> {
+        let key = this.configService.get<string>('prefix.verifyEmailPrefix');
+        key = key + emailVerificationToken
+        const userId = await this.redisHandlerService.client.get(key);
+
+        if (!userId) {
+            throw new BadRequestException("User not found for this email verification token")
+        }
+
+        return userId
+    }
+
+    public async getUserIdFromForgotPasswordToken(ForgotPasswordToken: string): Promise<string> {
+        let key = this.configService.get<string>('prefix.forgotPasswordPrefix');
+        key = key + ForgotPasswordToken
+        const userId = await this.redisHandlerService.client.get(key);
+
+        if (!userId) {
+            throw new BadRequestException("User not found for this forgot password token")
+        }
+
+        return userId
+    }
+
+    public delVerifyEmailTokenKey(emailVerificationToken: string) {
+        let key = this.configService.get<string>('prefix.verifyEmailPrefix');
+        key = key + emailVerificationToken
+        return this.redisHandlerService.client.del(key)
     }
 }

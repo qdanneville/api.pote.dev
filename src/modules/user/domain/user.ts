@@ -13,6 +13,7 @@ import { VerifyEmailToken } from "./verifyEmailToken";
 import { UserCreatedEvent } from "./events/userCreatedEvent";
 import { UserLoggedIn } from "./events/userLoggedIn"
 import { UserDeleted } from "./events/userDeleted"
+import { EmailVerified } from './events/emailVerified'
 
 
 interface UserProps {
@@ -103,6 +104,11 @@ export class User extends AggregateRoot<UserProps> {
 
     public setVerifyEmailToken(token: VerifyEmailToken): void {
         this.props.verifyEmailToken = token
+    }
+
+    public verifyEmail(): void {
+        this.addDomainEvent(new EmailVerified(this));
+        this.props.isEmailVerified = true;
     }
 
     public delete(): void {

@@ -1,17 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
 import { UserRepository } from '../../repos/user.repository';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
 
 @Injectable()
 export class ConfirmEmailService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
+        private redisAuthService: RedisAuthService,
         private userRepo: UserRepository,
     ) { }
 
     async confirmEmail(body) {
         const key = process.env.CONFIRM_EMAIL_PREFIX + body.token;
-        const userId = await this.redisHandlerService.client.get(key);
+
+        const { token } = body
+        const userId = await this.redisAuthService.getUserIdFromEmailVerificationToken(token);
 
         if (!userId) {
             throw new BadRequestException("Token expired");
@@ -23,9 +25,10 @@ export class ConfirmEmailService {
             throw new BadRequestException("User no longer exists");
         }
 
-        await this.userRepo.confirmUser(userId)
+        const updatedUser = await this.userRepo.confirmUser(userId)
+        await this.redisAuthService.delVerifyEmailTokenKey(token)
 
-        await this.redisHandlerService.client.del(key)
+        updatedUser.verifyEmail()
 
         return
     }

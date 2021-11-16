@@ -48,8 +48,6 @@ export class UserMap {
     }
 
     public static toResponse(user: User): userResponseDTO {
-        console.log(user);
-
         const userReponse = {
             username: user.username.value,
             email: user.email.value,

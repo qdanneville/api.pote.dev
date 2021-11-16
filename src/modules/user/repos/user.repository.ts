@@ -12,19 +12,21 @@ export class UserRepository {
         return this.entities.user.findMany();
     }
 
-    async getUserById(id: string) {
-        const user = await this.entities.user.findUnique({
+    async getUserById(id: string): Promise<User> {
+        const UserModel = this.entities.user
+
+        const user = await UserModel.findUnique({
             where: {
                 id,
             },
         });
         if (!user) {
-            throw new NotFoundException(id);
+            throw new NotFoundException('User not found');
         }
-        return user;
+        return UserMap.toDomain(user);;
     }
 
-    async getUserByEmail(email: UserEmail) {
+    async getUserByEmail(email: UserEmail): Promise<User> {
         const UserModel = this.entities.user
         const user = await UserModel.findUnique({
             where: {
@@ -66,7 +68,6 @@ export class UserRepository {
 
         if (!exists) {
             const rawPrismaUser = await UserMap.toPersistence(user)
-            console.log('user before creation : ', rawPrismaUser);
             await UserModel.create({
                 data: {
                     ...rawPrismaUser,
@@ -88,9 +89,9 @@ export class UserRepository {
         })
     }
 
-    async confirmUser(userId: string) {
+    async confirmUser(userId: string): Promise<User> {
         const UserModel = this.entities.user
-        return await UserModel.update({
+        const user = await UserModel.update({
             where: {
                 id: userId,
             },
@@ -98,6 +99,8 @@ export class UserRepository {
                 isEmailVerified: true
             }
         })
+
+        return UserMap.toDomain(user);
     }
 
     deleteUser(id: string) {
