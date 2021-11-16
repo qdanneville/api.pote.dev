@@ -18,6 +18,7 @@ import { ConfirmedGuard } from './services/auth/guards/confirmed.guard';
 //UseCases
 //Auth
 import { CreateUserModule } from './useCases/createUser/createUser.module'
+import { SendVerifyEmailModule } from './useCases/sendVerifyEmail/sendVerifyEmail.module';
 import { ConfirmEmailModule } from './useCases/confirmEmail/confirmEmail.module';
 import { LoginModule } from './useCases/login/login.module';
 import { LogoutModule } from './useCases/logout/logout.module';
@@ -47,6 +48,7 @@ import { RoleRepository } from './repos/role.repository';
     RedisAuthModule,
     CreateUserModule,
     ConfirmEmailModule,
+    SendVerifyEmailModule,
     LoginModule,
     CheckGithubUserModule,
     RegisterGithubModule,

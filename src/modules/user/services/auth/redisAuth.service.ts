@@ -8,6 +8,7 @@ import { RedisHandlerService } from "./redis/redis-handler.service";
 import * as crypto from 'crypto'
 import { XsrfToken } from "../../domain/xsrfToken";
 import { User } from "../../domain/user";
+import { VerifyEmailTokenClaim } from "../../domain/verifyEmailToken";
 
 @Injectable()
 export class RedisAuthService {
@@ -70,5 +71,16 @@ export class RedisAuthService {
         ]);
 
         return this.redisHandlerService.setUser(props.id.toString(), userProperties)
+    }
+
+    public addVerifyEmailToken(props: VerifyEmailTokenClaim): Promise<any> {
+        let key = this.configService.get<string>('prefix.verifyEmailPrefix');
+        key = key + props.token
+        const expiresIn = this.configService.get<string>('security.verifyEmailTokenExpiresIn')
+        const userId = props.userId.toString()
+
+        console.log(expiresIn);
+
+        return this.redisHandlerService.client.set(key, userId, 'ex', expiresIn)
     }
 }

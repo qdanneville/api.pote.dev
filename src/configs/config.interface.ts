@@ -4,7 +4,8 @@ export interface Config {
     swagger: SwaggerConfig;
     security: SecurityConfig;
     redis: RedisConfig;
-    github: GithubConfig
+    github: GithubConfig;
+    prefix: PrefixConfig
 }
 
 export interface NestConfig {
@@ -31,6 +32,8 @@ export interface SecurityConfig {
     jwtSecret: string;
     refreshSecret: string;
     bcryptSaltOrRound: string | number;
+    verifyEmailTokenExpiresIn: string;
+    forgetPasswordExpiresIn: string;
 }
 
 export interface RedisConfig {
@@ -38,6 +41,12 @@ export interface RedisConfig {
     port: number;
     db: number;
     password: string;
+
+}
+
+export interface PrefixConfig {
+    forgetPasswordPrefix: string;
+    verifyEmailPrefix: string
 }
 
 export interface GithubConfig {

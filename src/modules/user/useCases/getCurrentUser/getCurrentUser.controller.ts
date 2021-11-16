@@ -16,7 +16,7 @@ export class GetCurrentUserController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    async me(@Request() req) {
+    async me(@Request() req): Promise<userResponseDTO> {
         return UserMap.toResponse(await this.getUserByEmailService.find(req.user as GetUserByEmailDTO))
     }
 }

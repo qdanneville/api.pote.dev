@@ -7,6 +7,7 @@ import { UserRole } from "./userRole";
 import { UserPassword } from "./userPassword";
 import { AccessToken } from "./accessToken";
 import { RefreshToken } from './refreshToken'
+import { VerifyEmailToken } from "./verifyEmailToken";
 
 //Events
 import { UserCreatedEvent } from "./events/userCreatedEvent";
@@ -19,6 +20,7 @@ interface UserProps {
     username: UserUsername;
     password: UserPassword;
     isEmailVerified?: boolean;
+    verifyEmailToken?: VerifyEmailToken
     isAdmin?: boolean;
     accessToken?: AccessToken;
     refreshToken?: RefreshToken;
@@ -50,6 +52,10 @@ export class User extends AggregateRoot<UserProps> {
 
     get isEmailVerified(): boolean {
         return this.props.isEmailVerified;
+    }
+
+    get verifyEmailToken(): VerifyEmailToken {
+        return this.props.verifyEmailToken;
     }
 
     get isAdmin(): boolean {
@@ -93,6 +99,10 @@ export class User extends AggregateRoot<UserProps> {
         this.props.accessToken = accessToken;
         this.props.refreshToken = refreshToken;
         this.props.lastLogin = new Date();
+    }
+
+    public setVerifyEmailToken(token: VerifyEmailToken): void {
+        this.props.verifyEmailToken = token
     }
 
     public delete(): void {
