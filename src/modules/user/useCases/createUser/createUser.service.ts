@@ -63,8 +63,6 @@ export class CreateUserService {
 
             await this.userRepository.createUser(userDomain)
 
-            console.log(userDomain);
-
         } catch (err) {
             throw new BadRequestException(err);
         }

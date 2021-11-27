@@ -9,7 +9,6 @@ export class SendVerifyEmailController {
     @HttpCode(201)
     @Post()
     async function(@Body() body: SendVerifyEmailDTO) {
-        console.log(body);
         return this.SendVerifyEmailService.send(body);
     }
 }

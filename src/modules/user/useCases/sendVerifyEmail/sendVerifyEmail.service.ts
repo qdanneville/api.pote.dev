@@ -33,7 +33,6 @@ export class SendVerifyEmailService {
             }
 
             const verifyEmailTokenDomain = VerifyEmailToken.create(verifyEmailTokenPayload)
-            console.log(verifyEmailTokenDomain);
             this.redisAuthService.addVerifyEmailToken({ token: verifyEmailTokenDomain.value, userId: user.id })
 
             //TODO EMAIL

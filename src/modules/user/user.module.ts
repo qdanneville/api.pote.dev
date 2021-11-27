@@ -19,7 +19,7 @@ import { ConfirmedGuard } from './services/auth/guards/confirmed.guard';
 //Auth
 import { CreateUserModule } from './useCases/createUser/createUser.module'
 import { SendVerifyEmailModule } from './useCases/sendVerifyEmail/sendVerifyEmail.module';
-import { ConfirmEmailModule } from './useCases/confirmEmail/confirmEmail.module';
+import { VerifyEmailModule } from './useCases/verifyEmail/verifyEmail.module';
 import { LoginModule } from './useCases/login/login.module';
 import { LogoutModule } from './useCases/logout/logout.module';
 import { GetCurrentUserModule } from './useCases/getCurrentUser/getCurrentUser.module'
@@ -47,7 +47,7 @@ import { RoleRepository } from './repos/role.repository';
     JwtHandlerModule,
     RedisAuthModule,
     CreateUserModule,
-    ConfirmEmailModule,
+    VerifyEmailModule,
     SendVerifyEmailModule,
     LoginModule,
     CheckGithubUserModule,

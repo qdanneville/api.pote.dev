@@ -44,10 +44,6 @@ export class LoginService {
 
             const xsrfToken = this.redisAuthService.createXsrfToken()
 
-            console.log('user :', user);
-            console.log('user role :', user.role);
-            console.log('user role id :', user.role.roleId);
-
             //CARE
             //We might want the role name here
             //TO CHECK
@@ -61,10 +57,7 @@ export class LoginService {
                 roleName: user.role.name,
             };
 
-            console.log('access payload', accessPayload);
             const accessToken = await this.redisAuthService.createAccessToken(accessPayload)
-
-            console.log('access token', accessToken);
 
             const refreshPayload = { username: user.username.value, email: user.email.value };
             const refreshToken = await this.redisAuthService.createRefreshToken(refreshPayload)
@@ -81,7 +74,7 @@ export class LoginService {
         }
         catch (err) {
             console.log('err')
-            throw new BadRequestException(err.toString())
+            throw new BadRequestException(err.message.toString())
         }
     }
 }
