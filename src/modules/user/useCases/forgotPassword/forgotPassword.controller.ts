@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { ForgotPasswordService } from './forgotPassword.service';
-import { ForgotPasswordDto } from '../../dtos/forgotPassword.dto'
+import { ForgotPasswordDTO } from './forgotPassword.dto'
 
 @Controller('auth/forgot_password')
 export class ForgotPasswordController {
@@ -15,7 +15,7 @@ export class ForgotPasswordController {
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    async forgotPassword(@Body() user: ForgotPasswordDto) {
+    async forgotPassword(@Body() user: ForgotPasswordDTO) {
         return this.ForgotPasswordService.forgotPassword(user.email)
     }
 }

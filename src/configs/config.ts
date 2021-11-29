@@ -13,7 +13,7 @@ const config: Config = {
         enabled: true,
         title: 'pote.dev Swagger',
         description: 'pote.dev | La plateforme pour apprendre à bien coder x)',
-        version: '1.5',
+        version: '1',
         path: 'api',
     },
     security: {
@@ -23,7 +23,7 @@ const config: Config = {
         refreshSecret: process.env.JWT_REFRESH_SECRET,
         bcryptSaltOrRound: 10,
         verifyEmailTokenExpiresIn: process.env.VERIFFY_EMAIL_TOKEN_EXPIRES_IN,
-        forgetPasswordExpiresIn: process.env.FORGET_PASSWORD_TOKEN_EXPIRES_IN
+        forgotPasswordTokenExpiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
     },
     redis: {
         host: process.env.REDIS_HOST,
@@ -32,7 +32,7 @@ const config: Config = {
         password: process.env.REDIS_PASSWORD,
     },
     prefix: {
-        forgetPasswordPrefix: process.env.FORGET_PASSWORD_PREFIX,
+        forgotPasswordPrefix: process.env.FORGOT_PASSWORD_PREFIX,
         verifyEmailPrefix: process.env.VERIFY_EMAIL_PREFIX
     },
     github: {

@@ -10,10 +10,12 @@ import { RefreshToken } from './refreshToken'
 import { VerifyEmailToken } from "./verifyEmailToken";
 
 //Events
-import { UserCreatedEvent } from "./events/userCreatedEvent";
+import { UserCreated } from "./events/userCreated";
 import { UserLoggedIn } from "./events/userLoggedIn"
 import { UserDeleted } from "./events/userDeleted"
-import { EmailVerified } from './events/emailVerified'
+import { UserEmailVerified } from './events/userEmailVerified'
+import { UserForgotPassword } from './events/userForgotPassword'
+import { UserResetPassword } from "./events/userResetPassword";
 
 
 interface UserProps {
@@ -107,8 +109,16 @@ export class User extends AggregateRoot<UserProps> {
     }
 
     public verifyEmail(): void {
-        this.addDomainEvent(new EmailVerified(this));
+        this.addDomainEvent(new UserEmailVerified(this));
         this.props.isEmailVerified = true;
+    }
+
+    public forgotPasswordRequested(): void {
+        this.addDomainEvent(new UserForgotPassword(this));
+    }
+
+    public resetPassword(): void {
+        this.addDomainEvent(new UserResetPassword(this));
     }
 
     public delete(): void {
@@ -130,7 +140,7 @@ export class User extends AggregateRoot<UserProps> {
         const idWasProvided = !!id;
 
         if (!idWasProvided) {
-            user.addDomainEvent(new UserCreatedEvent(user));
+            user.addDomainEvent(new UserCreated(user));
         }
 
         return user;

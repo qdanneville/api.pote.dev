@@ -33,7 +33,7 @@ export interface SecurityConfig {
     refreshSecret: string;
     bcryptSaltOrRound: string | number;
     verifyEmailTokenExpiresIn: string;
-    forgetPasswordExpiresIn: string;
+    forgotPasswordTokenExpiresIn: string;
 }
 
 export interface RedisConfig {
@@ -45,7 +45,7 @@ export interface RedisConfig {
 }
 
 export interface PrefixConfig {
-    forgetPasswordPrefix: string;
+    forgotPasswordPrefix: string;
     verifyEmailPrefix: string
 }
 

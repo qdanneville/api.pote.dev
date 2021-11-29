@@ -2,11 +2,13 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'src/modules/user/repos/user.repository';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
+import { UserPassword } from '../../domain/userPassword';
 
 @Injectable()
 export class ResetPasswordService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
+        private redisAuthService: RedisAuthService,
         private userRepo: UserRepository,
     ) { }
 
@@ -15,12 +17,9 @@ export class ResetPasswordService {
             throw new BadRequestException("Passwords don't match");
         }
 
-        const key = process.env.FORGET_PASSWORD_PREFIX + body.token;
-        const userId = await this.redisHandlerService.client.get(key);
+        const { token } = body
 
-        if (!userId) {
-            throw new BadRequestException("Token expired");
-        }
+        const userId = await this.redisAuthService.getUserIdFromForgotPasswordToken(token);
 
         const user = await this.userRepo.getUserById(userId)
 
@@ -28,12 +27,15 @@ export class ResetPasswordService {
             throw new BadRequestException("User no longer exists");
         }
 
-        const hashedPassword = await bcrypt.hash(body.password, 10);
+        const passwordDomain = UserPassword.create({ value: body.password })
+        const hashedPassword = await passwordDomain.getHashedValue();
 
-        await this.userRepo.changePassword(userId, hashedPassword)
+        const updatedUser = await this.userRepo.changePassword(user.id.toString(), hashedPassword)
 
-        await this.redisHandlerService.client.del(key)
+        await this.redisAuthService.delForgotPasswordTokenKey(token)
 
-        return { user }
+        updatedUser.resetPassword()
+
+        return
     }
 }

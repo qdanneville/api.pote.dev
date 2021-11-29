@@ -2,7 +2,7 @@ import { User } from "../user";
 import { IDomainEvent } from "../../../../core/domain/events/IDomainEvent";
 import { UniqueEntityID } from "../../../../core/domain/UniqueEntityID";
 
-export class EmailVerified implements IDomainEvent {
+export class UserForgotPassword implements IDomainEvent {
     public dateTimeOccurred: Date;
     public user: User;
 

@@ -2,13 +2,17 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { AccessToken, AccessTokenClaims } from "../../domain/accessToken";
 import { RefreshToken, RefreshTokenClaims } from "../../domain/refreshToken";
-import { RedisUser } from "../../domain/userRedis";
 import { JwtHandlerService } from "./jwt/jwt-handler.service";
 import { RedisHandlerService } from "./redis/redis-handler.service";
 import * as crypto from 'crypto'
+
+
+//Domain
 import { XsrfToken } from "../../domain/xsrfToken";
 import { User } from "../../domain/user";
 import { VerifyEmailTokenClaim } from "../../domain/verifyEmailToken";
+import { ForgotPasswordTokenClaim } from "../../domain/forgotPasswordToken";
+import { RedisUser } from "../../domain/userRedis";
 
 @Injectable()
 export class RedisAuthService {
@@ -84,6 +88,17 @@ export class RedisAuthService {
         return redis
     }
 
+    public async addForgotPasswordToken(props: ForgotPasswordTokenClaim): Promise<any> {
+        let key = this.configService.get<string>('prefix.forgotPasswordPrefix');
+        key = key + props.token
+        const expiresIn = this.configService.get<string>('security.forgotPasswordTokenExpiresIn')
+        const userId = props.userId.toString()
+
+        const redis = await this.redisHandlerService.client.set(key, userId, 'EX', expiresIn)
+
+        return redis
+    }
+
     public async getUserIdFromEmailVerificationToken(emailVerificationToken: string): Promise<string> {
         let key = this.configService.get<string>('prefix.verifyEmailPrefix');
         key = key + emailVerificationToken
@@ -111,6 +126,12 @@ export class RedisAuthService {
     public delVerifyEmailTokenKey(emailVerificationToken: string) {
         let key = this.configService.get<string>('prefix.verifyEmailPrefix');
         key = key + emailVerificationToken
+        return this.redisHandlerService.client.del(key)
+    }
+
+    public delForgotPasswordTokenKey(forgotPasswordToken: string) {
+        let key = this.configService.get<string>('prefix.forgotPasswordPrefix');
+        key = key + forgotPasswordToken
         return this.redisHandlerService.client.del(key)
     }
 }

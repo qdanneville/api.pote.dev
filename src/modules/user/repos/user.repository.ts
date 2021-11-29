@@ -79,7 +79,8 @@ export class UserRepository {
     }
 
     async changePassword(userId: string, password: string) {
-        return await this.entities.user.update({
+        const UserModel = this.entities.user
+        const user = await UserModel.update({
             where: {
                 id: userId,
             },
@@ -87,6 +88,8 @@ export class UserRepository {
                 password,
             },
         })
+
+        return UserMap.toDomain(user);
     }
 
     async confirmUser(userId: string): Promise<User> {

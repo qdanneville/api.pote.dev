@@ -1,28 +1,48 @@
-import { Injectable, BadGatewayException } from '@nestjs/common';
-import { GetUserByEmailService } from '../getUserByEmail/getUserByEmail.service';
-import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
+import { UserRepository } from '../../repos/user.repository';
 import { MailerService } from '@nestjs-modules/mailer';
+
+import { UserEmail } from '../../domain/userEmail';
+import { ForgotPasswordToken } from '../../domain/forgotPasswordToken';
+
 import * as crypto from 'crypto'
+import { forgotPasswordResponse } from './forgotPassword.dto';
 
 @Injectable()
 export class ForgotPasswordService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
-        private getUserByEmail: GetUserByEmailService,
-        private readonly mailerService: MailerService
+        private redisAuthService: RedisAuthService,
+        private userRepository: UserRepository,
+        // private readonly mailerService: MailerService
     ) { }
 
     async forgotPassword(email) {
+        let user;
 
         try {
-            //TODO refacto this
-            // const user = await this.getUserByEmail.find(email, true)
+            const emailDomain = UserEmail.create(email)
 
-            // if (!user) {
-            //     return
-            // }
+            try {
+                user = await this.userRepository.getUserByEmail(emailDomain)
+            } catch (err) {
+                console.log('err', err)
+                const response: forgotPasswordResponse = {
+                    token: ""
+                }
+                return response
+            }
 
-            // const forgotPasswordToken = crypto.randomBytes(64).toString('hex');
+            const token = crypto.randomBytes(64).toString('hex');
+            const date = new Date();
+
+            const forgotPasswordTokenPayload = {
+                value: token,
+                date
+            }
+
+            const forgotPasswordToken = ForgotPasswordToken.create(forgotPasswordTokenPayload)
+            this.redisAuthService.addForgotPasswordToken({ token: forgotPasswordToken.value, userId: user.id })
 
             // await this.redisHandlerService.client.set(
             //     process.env.FORGET_PASSWORD_PREFIX + forgotPasswordToken,
@@ -39,9 +59,15 @@ export class ForgotPasswordService {
             //         text: `Hey ${user.firstname}, /n <a href="${process.env.APP_BASE_URL}/change-password/${forgotPasswordToken}">reset password</a>`, // plaintext body
             //         html: `<b>Hey ${user.firstname}, /n </b></br><a href="${process.env.APP_BASE_URL}/change-password/${forgotPasswordToken}">reset password</a>`, // HTML body content
             //     })
+
+            const response: forgotPasswordResponse = {
+                token: forgotPasswordToken.value
+            }
+
+            return response
         }
         catch (err) {
-            return new BadGatewayException('Something went wrong')
+            throw new BadRequestException(err.message);
         }
 
         return
