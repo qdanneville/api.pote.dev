@@ -19,8 +19,10 @@ export class RedisHandlerService {
     and create/update fields for purposes
     like reset password, refresh token etc.
   */
-  async setUser(id: string, properties: Map<string, string>): Promise<boolean> {
+  async setUser(id: string, properties: Map<string, string>, refreshIn: number): Promise<boolean> {
     const res: string = await this.client.hmset(id, properties);
+    await this.client.expire(id, refreshIn)
+    console.log('res', res);
 
     if (!res) {
       throw new Error("Can not save data in redis database.");

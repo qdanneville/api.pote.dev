@@ -54,7 +54,7 @@ export class RedisAuthService {
 
         const claims: RefreshTokenClaims = {
             email: props.email,
-            username: props.email,
+            username: props.username,
         }
 
         return this.jwtHandlerService.createJWT(
@@ -74,29 +74,34 @@ export class RedisAuthService {
             ["isEmailVerified", JSON.stringify(props.isEmailVerified)],
         ]);
 
-        return this.redisHandlerService.setUser(props.id.toString(), userProperties)
+        const expiresIn = this.configService.get<number>('security.refreshIn');
+
+        return this.redisHandlerService.setUser(props.id.toString(), userProperties, expiresIn)
     }
 
-    public async addVerifyEmailToken(props: VerifyEmailTokenClaim): Promise<any> {
+    public verifyRefreshToken(token: string) {
+        const refreshSecret = this.configService.get<string>('security.refreshSecret');
+        return this.jwtHandlerService.verifyToken(token, refreshSecret)
+    }
+
+
+
+    public addVerifyEmailToken(props: VerifyEmailTokenClaim): Promise<any> {
         let key = this.configService.get<string>('prefix.verifyEmailPrefix');
         key = key + props.token
         const expiresIn = this.configService.get<string>('security.verifyEmailTokenExpiresIn')
         const userId = props.userId.toString()
 
-        const redis = await this.redisHandlerService.client.set(key, userId, 'EX', expiresIn)
-
-        return redis
+        return this.redisHandlerService.client.set(key, userId, 'EX', expiresIn)
     }
 
-    public async addForgotPasswordToken(props: ForgotPasswordTokenClaim): Promise<any> {
+    public addForgotPasswordToken(props: ForgotPasswordTokenClaim): Promise<any> {
         let key = this.configService.get<string>('prefix.forgotPasswordPrefix');
         key = key + props.token
         const expiresIn = this.configService.get<string>('security.forgotPasswordTokenExpiresIn')
         const userId = props.userId.toString()
 
-        const redis = await this.redisHandlerService.client.set(key, userId, 'EX', expiresIn)
-
-        return redis
+        return this.redisHandlerService.client.set(key, userId, 'EX', expiresIn)
     }
 
     public async getUserIdFromEmailVerificationToken(emailVerificationToken: string): Promise<string> {
@@ -121,6 +126,11 @@ export class RedisAuthService {
         }
 
         return userId
+    }
+
+    public getRedisRefreshTokenField(userId: string) {
+        const fields: string[] = ["refreshToken"];
+        return this.redisHandlerService.getFields(userId, fields);
     }
 
     public delVerifyEmailTokenKey(emailVerificationToken: string) {

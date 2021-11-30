@@ -20,3 +20,4 @@ export class GetCurrentUserController {
         return UserMap.toResponse(await this.getUserByEmailService.find(req.user as GetUserByEmailDTO))
     }
 }
+

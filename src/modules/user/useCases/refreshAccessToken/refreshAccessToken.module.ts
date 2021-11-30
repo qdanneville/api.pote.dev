@@ -3,10 +3,10 @@ import { RefreshAccessTokenService } from './refreshAccessToken.service';
 import { RefreshAccessTokenController } from './refreshAccessToken.controller'
 
 import { UserRepository } from '../../repos/user.repository';
-import { GetUserByEmailService } from '../getUserByEmail/getUserByEmail.service';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
 
 @Module({
-    providers: [RefreshAccessTokenService, UserRepository, GetUserByEmailService],
+    providers: [RefreshAccessTokenService, RedisAuthService, UserRepository],
     controllers: [RefreshAccessTokenController],
     exports: [RefreshAccessTokenService],
 })

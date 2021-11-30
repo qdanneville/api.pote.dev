@@ -55,7 +55,7 @@ export class LoginGithubService {
                 ["access_token", JSON.stringify(accessToken)],
             ]);
 
-            this.redisHandlerService.setUser(user.id, userProperties)
+            // this.redisHandlerService.setUser(user.id, userProperties)
 
             return {
                 accessToken,

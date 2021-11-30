@@ -19,7 +19,7 @@ export class JwtHandlerService {
     async createJWT(
         payload: any,
         secret: string,
-        expiresIn?: string,
+        expiresIn?: string | number,
     ): Promise<string> {
         try {
             let token;

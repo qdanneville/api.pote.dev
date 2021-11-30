@@ -1,74 +1,76 @@
-import { Injectable, UnauthorizedException, BadGatewayException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadGatewayException, BadRequestException } from '@nestjs/common';
 import { GetUserByEmailService } from '../getUserByEmail/getUserByEmail.service';
 import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
 import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
 import * as crypto from 'crypto'
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
+import { UserRepository } from '../../repos/user.repository';
+import { RefreshAccessTokenDTO } from './refreshAccessToken.dto';
+import { User } from '../../domain/user';
+import { UserEmail } from '../../domain/userEmail';
 
 @Injectable()
 export class RefreshAccessTokenService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
-        private jwtHandlerService: JwtHandlerService,
-        private getUserByEmailService: GetUserByEmailService,
+        private redisAuthService: RedisAuthService,
+        private userRepository: UserRepository,
     ) { }
 
-    async refreshToken(refreshToken) {
-        const verifiedToken = await this.jwtHandlerService.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET)
-        const user: any = await this.getUserByEmailService.find(verifiedToken.email);
-        const keys: string[] = ["refresh_token"];
-        const redisUser = await this.redisHandlerService.getFields(user.id, keys);
+    async refreshToken(req: RefreshAccessTokenDTO) {
 
-        if (refreshToken !== JSON.parse(redisUser.refresh_token)) {
-            throw new UnauthorizedException(
-                'Refresh token not found',
-            );
+        const { refreshToken } = req
+        let user: User;
+        let verifiedToken;
+
+        try {
+            verifiedToken = await this.redisAuthService.verifyRefreshToken(refreshToken)
+        }
+        catch (err) {
+            throw new BadRequestException("Refresh token expired");
         }
 
-        const xsrfToken = crypto.randomBytes(64).toString('hex');
+        try {
+            const emailDomain = UserEmail.create(verifiedToken.email)
+            user = await this.userRepository.getUserByEmail(emailDomain)
+        }
+        catch (err) {
+            console.log('err', err)
+            throw new BadRequestException("User no longer exists");
+        }
 
+        const redisRefreshToken = await this.redisAuthService.getRedisRefreshTokenField(user.id.toString())
+        
+        if (refreshToken !== JSON.parse(redisRefreshToken.refreshToken)) {
+            throw new BadRequestException("User not found for this refresh token");
+        }
+
+        const xsrfToken = this.redisAuthService.createXsrfToken()
+
+        //CARE
+        //We might want the role name here
+        //TO CHECK
         const accessPayload = {
-            username: user.username,
-            email: user.email,
+            username: user.username.value,
+            email: user.email.value,
             userId: user.id.toString(),
             xsrfToken,
-            confirmed: user.confirmed,
-            role: user.role?.name
+            isEmailVerified: user.isEmailVerified,
+            isAdmin: user.isAdmin,
+            roleName: user.role.name,
         };
 
-        const accessSecret = process.env.JWT_SECRET
-        const expiresIn = process.env.JWT_EXPIRE_IN
+        const accessToken = await this.redisAuthService.createAccessToken(accessPayload)
 
-        const accessToken = await this.jwtHandlerService.createJWT(
-            accessPayload,
-            accessSecret,
-            expiresIn
-        )
+        const refreshPayload = { username: user.username.value, email: user.email.value };
+        const newRefreshToken = await this.redisAuthService.createRefreshToken(refreshPayload)
 
-        const refreshPayload = { username: user.username, email: user.email };
-        const refreshSecret = process.env.JWT_REFRESH_SECRET
-        const refreshIn = process.env.JWT_REFRESH_IN
+        user.setAccessToken(accessToken, refreshToken)
 
-        const newRefreshToken = await this.jwtHandlerService.createJWT(
-            refreshPayload,
-            refreshSecret,
-            refreshIn
-        )
-
-        //TODO generate redis function in authRedisService
-        const userProperties = new Map<string, string>([
-            ["role", JSON.stringify(user.role?.name)],
-            ["confirmed", JSON.stringify(user.confirmed)],
-            ["refresh_token", JSON.stringify(newRefreshToken)],
-            ["access_token", JSON.stringify(accessToken)],
-        ]);
-
-        this.redisHandlerService.setUser(user.id, userProperties)
+        await this.redisAuthService.addRedisUser(user)
 
         return {
             accessToken,
-            expiresIn,
             refreshToken: newRefreshToken,
-            refreshIn,
             xsrfToken
         };
     }
