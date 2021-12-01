@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CheckGithubUserService } from './checkGithubUser.service';
 
-import { CheckGithubUserDto } from '../../dtos/checkGithubUser.dto';
+import { CheckGithubUserDTO } from './checkGithubUser.dto';
 
 @Controller('oauth/check/github')
 export class CheckGithubUserController {
@@ -17,9 +17,8 @@ export class CheckGithubUserController {
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    async login(@Query() query: CheckGithubUserDto, @Request() req, @Response() res) {
-        const { code } = query;
-        const result: any = await this.checkGithubUserService.check(code)
+    async login(@Query() query: CheckGithubUserDTO, @Request() req, @Response() res) {
+        const result: any = await this.checkGithubUserService.check(query)
 
         if (result.status === "login" && result.data) {
             res.cookie('access_token', result.data.accessToken, {
@@ -33,8 +32,6 @@ export class CheckGithubUserController {
             });
 
             res.json({
-                accessTokenExpiresIn: result.data.expiresIn,
-                refreshTokenExpiresIn: result.data.refreshIn,
                 xsrfToken: result.data.xsrfToken
             });
         } else if (result.status === "register") {

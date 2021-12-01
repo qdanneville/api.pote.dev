@@ -6,68 +6,44 @@ import axios from 'axios'
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto'
 import { ConfigService } from '@nestjs/config';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
+import { User } from '../../domain/user';
 
 @Injectable()
 export class LoginGithubService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
-        private jwtHandlerService: JwtHandlerService,
-        private configService: ConfigService
+        private redisAuthService: RedisAuthService,
     ) { }
 
-    async login(user) {
-        try {
-            const xsrfToken = crypto.randomBytes(64).toString('hex');
+    async login(user: User) {
+        const xsrfToken = this.redisAuthService.createXsrfToken()
 
-            const accessPayload = {
-                username: user.username,
-                email: user.email,
-                userId: user.id.toString(),
-                xsrfToken,
-                confirmed: user.confirmed,
-                role: user.role?.name
-            };
+        //CARE
+        //We might want the role name here
+        //TO CHECK
+        const accessPayload = {
+            username: user.username.value,
+            email: user.email.value,
+            userId: user.id.toString(),
+            xsrfToken,
+            isEmailVerified: user.isEmailVerified,
+            isAdmin: user.isAdmin,
+            roleName: user.role.name,
+        };
 
-            const accessSecret = process.env.JWT_SECRET
-            const expiresIn = process.env.JWT_EXPIRE_IN
+        const accessToken = await this.redisAuthService.createAccessToken(accessPayload)
 
-            const accessToken = await this.jwtHandlerService.createJWT(
-                accessPayload,
-                accessSecret,
-                expiresIn
-            )
+        const refreshPayload = { username: user.username.value, email: user.email.value };
+        const refreshToken = await this.redisAuthService.createRefreshToken(refreshPayload)
 
-            const refreshPayload = { username: user.username, email: user.email };
-            const refreshSecret = process.env.JWT_REFRESH_SECRET
-            const refreshIn = process.env.JWT_REFRESH_IN
+        user.setAccessToken(accessToken, refreshToken)
 
-            const refreshToken = await this.jwtHandlerService.createJWT(
-                refreshPayload,
-                refreshSecret,
-                refreshIn
-            )
+        await this.redisAuthService.addRedisUser(user)
 
-            //TODO generate redis function in authRedisService
-            const userProperties = new Map<string, string>([
-                ["role", JSON.stringify(user.role?.name)],
-                ["confirmed", JSON.stringify(user.confirmed)],
-                ["refresh_token", JSON.stringify(refreshToken)],
-                ["access_token", JSON.stringify(accessToken)],
-            ]);
-
-            // this.redisHandlerService.setUser(user.id, userProperties)
-
-            return {
-                accessToken,
-                expiresIn,
-                refreshToken,
-                refreshIn,
-                xsrfToken
-            };
-
-        }
-        catch (err) {
-
-        }
+        return {
+            accessToken,
+            refreshToken,
+            xsrfToken
+        };
     }
 }

@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { CheckGithubUserService } from './checkGithubUser.service';
 import { CheckGithubUserController } from './checkGithubUser.controller';
 import { UserRepository } from '../../repos/user.repository';
-import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
+import { githubProviderService } from '../../services/authProviders/githubProvider.service';
 import { LoginGithubService } from '../loginGithub/loginGithub.service';
-import { ConfigService } from '@nestjs/config';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
 
 @Module({
-    providers: [CheckGithubUserService, LoginGithubService, UserRepository, RedisHandlerService, ConfigService],
+    providers: [CheckGithubUserService, githubProviderService, RedisAuthService, UserRepository, LoginGithubService],
     controllers: [CheckGithubUserController],
     exports: [CheckGithubUserService]
 })

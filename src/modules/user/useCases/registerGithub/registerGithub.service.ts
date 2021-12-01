@@ -1,51 +1,76 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
-import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
-import axios from 'axios'
-
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto'
-import { ConfigService } from '@nestjs/config';
-import { CreateUserService } from '../createUser/createUser.service';
 import { LoginGithubService } from '../loginGithub/loginGithub.service';
+import { RegisterGithubDTO } from './RegisterGithub.dto';
+import { githubProviderService } from '../../services/authProviders/githubProvider.service';
+import { User } from '../../domain/user';
+import { UserEmail } from '../../domain/userEmail';
+import { UserRepository } from '../../repos/user.repository';
+import { UserUsername } from '../../domain/userUsername';
+import { UserRole } from '../../domain/userRole';
+import { RoleRepository } from '../../repos/role.repository';
 
 @Injectable()
 export class RegisterGithubService {
     constructor(
-        private redisHandlerService: RedisHandlerService,
-        private createUserService: CreateUserService,
+        private userRepository: UserRepository,
         private loginGithubService: LoginGithubService,
-        private jwtHandlerService: JwtHandlerService
+        private githubProviderService: githubProviderService,
+        private roleRepository: RoleRepository
     ) { }
 
-    async register(body) {
+    async register(req: RegisterGithubDTO) {
+
+        const { githubAccessToken, username } = req
+        let user: User
+        let alreadyCreatedUser;
+
+        const githubUserInfo = await this.githubProviderService.getProfileInfo(githubAccessToken)
+
+        const emailDomain = UserEmail.create(githubUserInfo.email)
+
         try {
-            const decodedToken = await this.jwtHandlerService.verifyToken(body.formToken, process.env.JWT_OAUTH_SECRET)
-
-            const key = process.env.JWT_OAUTH_TOKEN_PREFIX + body.formToken;
-            const userEmail = await this.redisHandlerService.client.get(key);
-
-            if (!userEmail) {
-                throw new BadRequestException("Token expired");
-            }
-
-            if (userEmail !== decodedToken.email) {
-                throw new BadRequestException("Wrong token or already used");
-            }
-
-            const userprops = {
-                username: body.username,
-                email: decodedToken.email,
-                confirmed: decodedToken.confirmed
-            }
-            const user = await this.createUserService.create(userprops);
-            
-            await this.redisHandlerService.client.del(key)
-
-            return this.loginGithubService.login(user)
+            alreadyCreatedUser = await this.userRepository.getUserByEmail(emailDomain)
         }
         catch (err) {
-            throw new BadRequestException(err.message);
+            console.log('err', err)
+        }
+
+        //Log user
+        if (alreadyCreatedUser) {
+            user = alreadyCreatedUser
+
+            return await this.loginGithubService.login(user)
+        }
+        //Register user
+        else {
+            const emailDomain = UserEmail.create(githubUserInfo.email)
+            const usernameDomain = await UserUsername.create(username)
+            const defaultUserRole = await this.roleRepository.getDefaultUserRole()
+            const roleDomain = UserRole.create({ roleId: defaultUserRole.id, name: defaultUserRole.name })
+
+            try {
+                const usernameIsTaken = await this.userRepository.getUserByUserName(usernameDomain.props.value)
+
+                if (usernameIsTaken) {
+                    throw 'This username is already taken';
+                }
+
+                const userDomain: User = User.create({
+                    email: emailDomain,
+                    username: usernameDomain,
+                    password: null,
+                    role: roleDomain,
+                    isEmailVerified: githubUserInfo.verified
+                })
+
+                await this.userRepository.createUser(userDomain)
+
+                return await this.loginGithubService.login(userDomain)
+
+            } catch (err) {
+                console.log('err', err)
+                throw new BadRequestException(err);
+            }
         }
     }
 }

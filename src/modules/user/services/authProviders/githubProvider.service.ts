@@ -14,30 +14,46 @@ export class githubProviderService {
         const clientId = this.configService.get<string>('github.clientId');
         const secretId = this.configService.get<string>('github.secretId');
 
-        const getAccessTokenApiCall = await axios.post(`${accessTokenUri}?client_id=${clientId}&client_secret=${secretId}&code=${code}`,
-            {},
-            {
-                headers: {
-                    "content-type": "application/json",
-                    "Accept": "application/json"
-                }
-            })
+        let response
 
-        return getAccessTokenApiCall?.data?.access_token
+        try {
+            response = await axios.post(`${accessTokenUri}?client_id=${clientId}&client_secret=${secretId}&code=${code}`,
+                {},
+                {
+                    headers: {
+                        "content-type": "application/json",
+                        "Accept": "application/json"
+                    }
+                })
+        } catch (err) {
+            console.log('err:', err);
+            throw new BadRequestException('Github code invalid or expired')
+        }
+
+        return response?.data?.access_token
     }
 
     public async getProfileInfo(token): Promise<AuthProviderProfileInfo> {
         const userUri = this.configService.get<string>('github.userUri');
+        let infoResponse;
+        let emailResponse;
 
-        const profileResponse = await axios.get(`${userUri}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+        try {
+            infoResponse = await axios.get(`${userUri}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
 
+            emailResponse = await this.getUserMail(token)
+        }
+        catch (err) {
+            console.log('err:', err);
+            throw new BadRequestException('Github access token invalid or expired')
+        }
 
-        const { email, verified } = await this.getUserMail(token)
-        const username: string = profileResponse?.data?.login;
+        const { email, verified } = emailResponse
+        const username: string = infoResponse?.data?.login;
 
         return {
             username,
@@ -46,7 +62,7 @@ export class githubProviderService {
         }
     }
 
-    private async getUserMail(token): Promise<AuthProviderProfileEmail> {
+    private async getUserMail(token: string): Promise<AuthProviderProfileEmail> {
         const userEmailUri = this.configService.get<string>('github.userEmailUri');
 
         const response = await axios.get(`${userEmailUri}`, {
@@ -57,6 +73,6 @@ export class githubProviderService {
 
         const primaryEmail: AuthProviderProfileEmail = response.data?.filter(email => email.primary)
 
-        return primaryEmail
+        return primaryEmail[0]
     }
 }

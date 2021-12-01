@@ -4,12 +4,10 @@ import {
     HttpStatus,
     Body,
     Post,
-    Request,
     Response,
-    UnauthorizedException
 } from '@nestjs/common';
 import { RegisterGithubService } from './registerGithub.service';
-import { RegisterGithubDto } from '../../dtos/RegisterGithub.dto';
+import { RegisterGithubDTO } from './RegisterGithub.dto';
 
 @Controller('oauth/register/github')
 export class RegisterGithubController {
@@ -17,8 +15,8 @@ export class RegisterGithubController {
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    async login(@Body() body: RegisterGithubDto, @Request() req, @Response() res) {
-        const result = await this.registerGithubService.register(body)
+    async login(@Body() req: RegisterGithubDTO, @Response() res) {
+        const result = await this.registerGithubService.register(req)
 
         res.cookie('access_token', result.accessToken, {
             httpOnly: true,
@@ -31,8 +29,6 @@ export class RegisterGithubController {
         });
 
         res.json({
-            accessTokenExpiresIn: result.expiresIn,
-            refreshTokenExpiresIn: result.refreshIn,
             xsrfToken: result.xsrfToken
         });
     }

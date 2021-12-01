@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsOptional, IsArray } from 'class-validator';
 
-export class RegisterGithubDto {
+export class RegisterGithubDTO {
     @IsString()
     @IsNotEmpty()
     username: string

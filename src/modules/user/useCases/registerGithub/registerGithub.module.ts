@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { RegisterGithubService } from './registerGithub.service';
 import { RegisterGithubController } from './registerGithub.controller';
-import { CreateUserService } from '../createUser/createUser.service';
 import { UserRepository } from '../../repos/user.repository';
-import { ConfigService } from '@nestjs/config';
 import { LoginGithubService } from '../loginGithub/loginGithub.service';
 import { RoleRepository } from '../../repos/role.repository';
+import { githubProviderService } from '../../services/authProviders/githubProvider.service';
+import { RedisAuthService } from '../../services/auth/redisAuth.service';
 
 @Module({
-    providers: [RegisterGithubService, CreateUserService, LoginGithubService, RoleRepository, UserRepository, ConfigService],
+    providers: [RegisterGithubService, LoginGithubService, githubProviderService, RoleRepository, UserRepository, RoleRepository, RedisAuthService],
     controllers: [RegisterGithubController],
     exports: [RegisterGithubService]
 })
