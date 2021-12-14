@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { PrismaModule } from './database/prisma/prisma.module';
 import { UsersModule } from './modules/user/user.module'
+import { FormationModule } from './modules/formation/formation.module';
 
 //Mail
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -28,6 +29,7 @@ import config from './configs/config'
       },
     }),
     UsersModule,
+    FormationModule
   ],
 })
 export class AppModule { }

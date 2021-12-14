@@ -6,7 +6,7 @@ const config: Config = {
     },
     cors: {
         enabled: true,
-        origin: 'http://localhost:3001',
+        origin: ['http://localhost:1234',"https://www.notion.so/"],
         credentials: true
     },
     swagger: {
@@ -43,6 +43,10 @@ const config: Config = {
         secretId: process.env.GITHUB_SECRET,
         redirectUri: process.env.OAUTH_REDIRECT_URI,
         scope: process.env.GITHUB_SCOPE
+    },
+    notion: {
+        notionContentApi: process.env.NOTION_CONTENT_API,
+        notionSecret: process.env.NOTION_SECRET
     }
 };
 

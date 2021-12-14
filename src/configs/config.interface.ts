@@ -5,7 +5,8 @@ export interface Config {
     security: SecurityConfig;
     redis: RedisConfig;
     github: GithubConfig;
-    prefix: PrefixConfig
+    prefix: PrefixConfig;
+    notion: NotionConfig;
 }
 
 export interface NestConfig {
@@ -14,7 +15,7 @@ export interface NestConfig {
 
 export interface CorsConfig {
     enabled: boolean;
-    origin: string;
+    origin: string[];
     credentials: boolean;
 }
 
@@ -57,4 +58,9 @@ export interface GithubConfig {
     secretId: string,
     redirectUri: string,
     scope: string
+}
+
+export interface NotionConfig {
+    notionContentApi: string,
+    notionSecret: string
 }
