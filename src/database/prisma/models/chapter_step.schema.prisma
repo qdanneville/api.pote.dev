@@ -1,0 +1,13 @@
+model ChapterStep {
+  id    Int @id @default(autoincrement())
+  order Int
+
+  courseContent   CourseContent @relation(fields: [courseContentId], references: [id])
+  courseContentId String
+
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+  chapterId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

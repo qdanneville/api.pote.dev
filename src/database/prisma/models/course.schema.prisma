@@ -1,0 +1,22 @@
+model Course {
+  id           String  @id @default(uuid())
+  slug         String  @unique
+  title        String
+  notionPageId String
+  imageUrl     String?
+  duration     Int
+
+  chapters      Chapter[]
+  prerequisites Prerequisite[] @relation(references: [id])
+  tags          Tag[]          @relation(references: [id])
+  technologies          Technology[]          @relation(references: [id])
+
+  formation   Formation @relation(fields: [formationId], references: [id])
+  formationId String
+
+  diffiulty   Difficulty @relation(fields: [diffiultyId], references: [id])
+  diffiultyId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

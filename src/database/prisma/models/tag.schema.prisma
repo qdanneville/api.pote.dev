@@ -1,0 +1,7 @@
+model Tag {
+  id   Int    @id @default(autoincrement())
+  slug String @unique
+  name String @unique
+
+  courses Course[] @relation(references: [id])
+}

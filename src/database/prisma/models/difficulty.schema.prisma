@@ -1,0 +1,8 @@
+model Difficulty {
+  id       Int     @id @default(autoincrement())
+  slug     String  @unique
+  name     String  @unique
+  imageUrl String?
+
+  courses Course[]
+}
