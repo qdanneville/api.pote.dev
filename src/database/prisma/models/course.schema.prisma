@@ -17,6 +17,11 @@ model Course {
   diffiulty   Difficulty @relation(fields: [diffiultyId], references: [id])
   diffiultyId Int
 
+  tryingUsers      User?    @relation("coursesStarted", fields: [tryingUserId], references: [id])
+  successfullUsers      User?    @relation("coursesSucceeded", fields: [successfullUserId], references: [id])
+  tryingUserId    String?
+  successfullUserId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

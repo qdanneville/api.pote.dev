@@ -1,0 +1,14 @@
+model CourseProgression {
+  id    Int @id @default(autoincrement())
+
+  user   User @relation(fields: [userId], references: [id])
+  userId String
+
+  chapterStep   ChapterStep @relation(fields: [chapterStepId], references: [id])
+  chapterStepId Int
+
+  done Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

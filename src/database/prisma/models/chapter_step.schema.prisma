@@ -8,6 +8,8 @@ model ChapterStep {
   chapter   Chapter @relation(fields: [chapterId], references: [id])
   chapterId String
 
+  courseProgressions CourseProgression[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

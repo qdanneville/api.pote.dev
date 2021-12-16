@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GetPageDTO } from '../getPage.dto';
-import { NotionProviderService } from '../../services/notion/notionProvider.service';
+import { NotionProviderService } from '../../services/notionProvider/notionProvider.service';
 
 @Injectable()
 export class GetPageService {

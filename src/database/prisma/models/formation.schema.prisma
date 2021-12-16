@@ -1,11 +1,13 @@
 model Formation {
   id           String  @id @default(uuid())
   slug         String  @unique
-  title        String
+  title        String  @unique
   notionPageId String
   imageUrl     String?
+  isPublished Boolean @default(false)
+
+  courses    Course[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Course    Course[]
 }

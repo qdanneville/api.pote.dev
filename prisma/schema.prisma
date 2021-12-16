@@ -11,15 +11,19 @@ model Chapter {
   id       String @id @default(uuid())
   slug     String @unique
   title    String
+  order    Int    @default(0)
   duration Int
 
   course   Course @relation(fields: [courseId], references: [id])
   courseId String
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  ChapterStep ChapterStep[]
-}model ChapterStep {
+  ChapterSteps ChapterStep[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChapterStep {
   id    Int @id @default(autoincrement())
   order Int
 
@@ -29,9 +33,13 @@ model Chapter {
   chapter   Chapter @relation(fields: [chapterId], references: [id])
   chapterId String
 
+  courseProgressions CourseProgression[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}model Course {
+}
+
+model Course {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
@@ -42,7 +50,7 @@ model Chapter {
   chapters      Chapter[]
   prerequisites Prerequisite[] @relation(references: [id])
   tags          Tag[]          @relation(references: [id])
-  technologies          Technology[]          @relation(references: [id])
+  technologies  Technology[]   @relation(references: [id])
 
   formation   Formation @relation(fields: [formationId], references: [id])
   formationId String
@@ -50,9 +58,16 @@ model Chapter {
   diffiulty   Difficulty @relation(fields: [diffiultyId], references: [id])
   diffiultyId Int
 
+  tryingUsers       User?   @relation("coursesStarted", fields: [tryingUserId], references: [id])
+  successfullUsers  User?   @relation("coursesSucceeded", fields: [successfullUserId], references: [id])
+  tryingUserId      String?
+  successfullUserId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}model CourseContent {
+}
+
+model CourseContent {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
@@ -60,60 +75,97 @@ model Chapter {
   imageUrl     String?
   duration     Int
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  ChapterStep ChapterStep[]
-}model Difficulty {
+  chapterSteps ChapterStep[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CourseProgression {
+  id Int @id @default(autoincrement())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  chapterStep   ChapterStep @relation(fields: [chapterStepId], references: [id])
+  chapterStepId Int
+
+  done Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Difficulty {
   id       Int     @id @default(autoincrement())
   slug     String  @unique
   name     String  @unique
   imageUrl String?
 
   courses Course[]
-}model Formation {
+}
+
+model Formation {
   id           String  @id @default(uuid())
   slug         String  @unique
-  title        String
+  title        String  @unique
   notionPageId String
   imageUrl     String?
+  isPublished  Boolean @default(false)
+
+  courses Course[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Course    Course[]
-}model Prerequisite {
+}
+
+model Prerequisite {
   id          Int     @id @default(autoincrement())
   name        String  @unique
   description String?
 
   courses Course[] @relation(references: [id])
-}model Role {
+}
+
+model Role {
   id   Int    @id @default(autoincrement())
   name String
-  User User[]
+
+  users User[]
 }
+
 model Tag {
   id   Int    @id @default(autoincrement())
   slug String @unique
   name String @unique
 
   courses Course[] @relation(references: [id])
-}model Technology {
-  id   Int    @id @default(autoincrement())
-  slug String @unique
-  name String @unique
-  imageUrl String?
-  courses Course[] @relation(references: [id])
 }
+
+model Technology {
+  id       Int      @id @default(autoincrement())
+  slug     String   @unique
+  name     String   @unique
+  imageUrl String?
+  courses  Course[] @relation(references: [id])
+}
+
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  email     String   @unique
-  password  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isEmailVerified Boolean  @default(false)
-  isAdmin Boolean
+  id       String  @id @default(uuid())
+  username String  @unique
+  email    String  @unique
+  password String?
+
+  isEmailVerified Boolean @default(false)
+  isAdmin         Boolean
 
   role   Role? @relation(fields: [roleId], references: [id])
-  roleId Int? @default(1)
+  roleId Int?  @default(1)
+
+  coursesProgressions CourseProgression[]
+  coursesStarted      Course[]            @relation(name: "coursesStarted")
+  coursesSucceeded    Course[]            @relation(name: "coursesSucceeded")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

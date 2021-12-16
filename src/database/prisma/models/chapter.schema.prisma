@@ -2,12 +2,14 @@ model Chapter {
   id       String @id @default(uuid())
   slug     String @unique
   title    String
+  order Int @default(0)
   duration Int
 
   course   Course @relation(fields: [courseId], references: [id])
   courseId String
 
+  ChapterSteps ChapterStep[]
+
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  ChapterStep ChapterStep[]
 }

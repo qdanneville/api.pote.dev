@@ -46,7 +46,12 @@ const config: Config = {
     },
     notion: {
         notionContentApi: process.env.NOTION_CONTENT_API,
-        notionSecret: process.env.NOTION_SECRET
+        notionVersionPrefix: process.env.NOTION_VERSION_PREFIX,
+        notionVersion: process.env.NOTION_VERSION,
+        notionSplitbeeContentApi: process.env.NOTION_SPLITBEE_CONTENT_API,
+        notionSecret: process.env.NOTION_SECRET,
+        notionToken: process.env.NOTION_TOKEN,
+        notionFormationsDatabaseId:process.env.NOTION_FORMATION_DATABASE_ID
     }
 };
 

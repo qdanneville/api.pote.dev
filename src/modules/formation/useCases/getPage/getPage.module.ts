@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GetPageService } from './getPage.service';
 import { GetPageController } from './getPage.controller';
-import { NotionProviderService } from '../../services/notion/notionProvider.service';
+import { NotionProviderService } from '../../services/notionProvider/notionProvider.service';
 
 @Module({
     providers: [NotionProviderService, GetPageService],
