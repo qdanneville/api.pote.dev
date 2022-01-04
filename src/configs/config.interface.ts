@@ -62,10 +62,15 @@ export interface GithubConfig {
 
 export interface NotionConfig {
     notionContentApi: string,
-    notionVersionPrefix:string
-    notionVersion:string
+    notionVersionPrefix: string
+    notionVersion: string
     notionSplitbeeContentApi: string
     notionSecret: string
     notionToken: string
-    notionFormationsDatabaseId:string
+    notionFormationsDatabaseId: string
+    notionCoursesDatabaseId: string
+    notionTagsDatabaseId: string
+    notionDifficultiesDatabaseId: string
+    notionPrerequisitesDatabaseId: string
+    notionTechnologiesDatabaseId: string
 }

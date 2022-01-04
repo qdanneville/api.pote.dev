@@ -30,34 +30,52 @@ export class FormationRepository {
             },
         });
 
-        return formation ? formation : null
+        return formation ? FormationMap.toDomain(formation) : null;
     }
 
-    async createOrUpdateFormation(formation: Formation) {
+    async getFormationByNotionPageId(notionPageId: string) {
+        const FormationModel = this.entities.formation
+        const formation = await FormationModel.findUnique({
+            where: {
+                notionPageId: notionPageId,
+            },
+        });
+
+        return formation ? FormationMap.toDomain(formation) : null;
+    }
+
+    async createFormation(formation: Formation) {
         const FormationModel = this.entities.formation
 
-        const alreadyCreatedFormation = await this.getFormationBySlug(formation.slug)
-        console.log('already created formation :', alreadyCreatedFormation)
+        const exists = await this.exists(formation.title)
 
-        const rawPrismaFormation = await FormationMap.toPersistence(formation)
+        if (!exists) {
+            const rawPrismaFormation = await FormationMap.toPersistence(formation)
 
-        if (!alreadyCreatedFormation) {
             await FormationModel.create({
                 data: {
                     ...rawPrismaFormation,
                 },
             });
-        } else {
-            const { id  } = alreadyCreatedFormation
-            await FormationModel.update({
-                where: {
-                    id,
-                },
-                data: {
-                    ...rawPrismaFormation,
-                },
-            });
         }
+
+        return
+    }
+
+    async updateFormation(formation: Formation) {
+        const FormationModel = this.entities.formation
+        const rawPrismaFormation = await FormationMap.toPersistence(formation)
+
+        const { id } = rawPrismaFormation
+
+        await FormationModel.update({
+            where: {
+                id,
+            },
+            data: {
+                ...rawPrismaFormation,
+            },
+        });
 
         return
     }

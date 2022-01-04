@@ -6,7 +6,7 @@ const config: Config = {
     },
     cors: {
         enabled: true,
-        origin: ['http://localhost:1234',"https://www.notion.so/"],
+        origin: ['http://localhost:1234', "https://www.notion.so/"],
         credentials: true
     },
     swagger: {
@@ -51,7 +51,12 @@ const config: Config = {
         notionSplitbeeContentApi: process.env.NOTION_SPLITBEE_CONTENT_API,
         notionSecret: process.env.NOTION_SECRET,
         notionToken: process.env.NOTION_TOKEN,
-        notionFormationsDatabaseId:process.env.NOTION_FORMATION_DATABASE_ID
+        notionFormationsDatabaseId: process.env.NOTION_FORMATIONS_DATABASE_ID,
+        notionCoursesDatabaseId: process.env.NOTION_COURSES_DATABASE_ID,
+        notionTagsDatabaseId: process.env.NOTION_TAGS_DATABASE_ID,
+        notionDifficultiesDatabaseId: process.env.NOTION_DIFFICULTIES_DATABASE_ID,
+        notionPrerequisitesDatabaseId: process.env.NOTION_PREREQUISITES_DATABASE_ID,
+        notionTechnologiesDatabaseId: process.env.NOTION_TECHNOLOGIES_DATABASE_ID,
     }
 };
 

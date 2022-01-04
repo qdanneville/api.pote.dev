@@ -1,11 +1,12 @@
 import { Formation } from '../domain/formation';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+import { Slug } from '../domain/slug';
 
 export class FormationMap {
     public static async toPersistence(formation: Formation): Promise<any> {
         return {
             id: formation.id.toString(),
-            slug: formation.slug,
+            slug: formation.slug.value,
             notionPageId: formation.notionPageId,
             title: formation.title,
             imageUrl: formation.imageUrl,
@@ -14,9 +15,10 @@ export class FormationMap {
     }
 
     public static async toDomain(raw: any): Promise<Formation> {
+        const slug = Slug.create({value:raw.slug})
 
         const formationDomain = Formation.create({
-            slug: raw.slug,
+            slug,
             notionPageId: raw.notionPageId,
             title: raw.title,
             isPublished: raw.isPublished,

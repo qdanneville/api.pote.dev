@@ -2,7 +2,7 @@ model Course {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
-  notionPageId String
+  notionPageId String @unique
   imageUrl     String?
   duration     Int
 
@@ -21,6 +21,8 @@ model Course {
   successfullUsers      User?    @relation("coursesSucceeded", fields: [successfullUserId], references: [id])
   tryingUserId    String?
   successfullUserId String?
+
+  isPublished Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

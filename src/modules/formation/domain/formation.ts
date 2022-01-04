@@ -2,9 +2,10 @@ import { AggregateRoot } from "../../../core/domain/AggregateRoot";
 import { UniqueEntityID } from "../../../core/domain/UniqueEntityID";
 import { FormationCreated } from "./events/formationCreated";
 import { FormationId } from "./FormationId";
+import { Slug } from "./slug";
 
 interface FormationProps {
-    slug: string,
+    slug: Slug,
     notionPageId: string
     title: string,
     imageUrl?: string,
@@ -24,7 +25,7 @@ export class Formation extends AggregateRoot<FormationProps> {
         return this.props.notionPageId
     }
 
-    get slug(): string {
+    get slug(): Slug {
         return this.props.slug
     }
 

@@ -43,7 +43,7 @@ model Course {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
-  notionPageId String
+  notionPageId String  @unique
   imageUrl     String?
   duration     Int
 
@@ -63,6 +63,8 @@ model Course {
   tryingUserId      String?
   successfullUserId String?
 
+  isPublished Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -71,7 +73,7 @@ model CourseContent {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
-  notionPageId String
+  notionPageId String  @unique
   imageUrl     String?
   duration     Int
 
@@ -97,10 +99,11 @@ model CourseProgression {
 }
 
 model Difficulty {
-  id       Int     @id @default(autoincrement())
-  slug     String  @unique
-  name     String  @unique
-  imageUrl String?
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
+  imageUrl     String?
 
   courses Course[]
 }
@@ -109,7 +112,7 @@ model Formation {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String  @unique
-  notionPageId String
+  notionPageId String  @unique
   imageUrl     String?
   isPublished  Boolean @default(false)
 
@@ -120,9 +123,10 @@ model Formation {
 }
 
 model Prerequisite {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
-  description String?
+  id           Int     @id @default(autoincrement())
+  name         String  @unique
+  notionPageId String  @unique
+  description  String?
 
   courses Course[] @relation(references: [id])
 }
@@ -135,19 +139,22 @@ model Role {
 }
 
 model Tag {
-  id   Int    @id @default(autoincrement())
-  slug String @unique
-  name String @unique
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
+  imageUrl     String?
 
   courses Course[] @relation(references: [id])
 }
 
 model Technology {
-  id       Int      @id @default(autoincrement())
-  slug     String   @unique
-  name     String   @unique
-  imageUrl String?
-  courses  Course[] @relation(references: [id])
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique
+  notionPageId String   @unique
+  name         String   @unique
+  imageUrl     String?
+  courses      Course[] @relation(references: [id])
 }
 
 model User {

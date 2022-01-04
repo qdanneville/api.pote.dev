@@ -11,7 +11,7 @@ export class GetPageService {
 
         console.log('page id :', page)
 
-        const pageContent = await this.notionProviderService.getPage(page)
+        const pageContent = await this.notionProviderService.getSplitBeePage(page)
         console.log('page Content : ', pageContent);
 
         return pageContent

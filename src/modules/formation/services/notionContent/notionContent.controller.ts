@@ -9,4 +9,9 @@ export class NotionContentController {
     async getAndCreateNotionFormations() {
         return this.notionContentService.syncFormationsFromNotion()
     }
+
+    @Post('/tags')
+    async getAndCreateNotionTags() {
+        return this.notionContentService.syncTags()
+    }
 }

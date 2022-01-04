@@ -2,7 +2,7 @@ model CourseContent {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
-  notionPageId String
+  notionPageId String @unique
   imageUrl     String?
   duration     Int
 
