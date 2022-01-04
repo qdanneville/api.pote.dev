@@ -14,4 +14,14 @@ export class NotionContentController {
     async getAndCreateNotionTags() {
         return this.notionContentService.syncTags()
     }
+
+    @Post('/technologies')
+    async getAndCreateNotionTechnologies() {
+        return this.notionContentService.syncTechnologies()
+    }
+
+    @Post('/difficulties')
+    async getAndCreateNotionDifficulties() {
+        return this.notionContentService.syncDifficulties()
+    }
 }

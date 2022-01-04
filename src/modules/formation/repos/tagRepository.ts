@@ -30,7 +30,7 @@ export class TagRepository {
             },
         });
 
-        return tag ? TagMap.toDomain(Tag) : null;
+        return tag ? TagMap.toDomain(tag) : null;
     }
 
     async getTagByNotionPageId(notionPageId: string) {

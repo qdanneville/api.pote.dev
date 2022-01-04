@@ -152,7 +152,35 @@ export class NotionProviderService implements Notion {
         }
         catch (err) {
             console.log(err.message)
-            throw new BadGatewayException('Something wrong with notion API - Formation')
+            throw new BadGatewayException('Something wrong with notion API - Tags')
+        }
+
+        return response.data ? response.data : null
+    }
+
+    public async getTechnologies() {
+        let response;
+
+        try {
+            response = await this.splitBeeClient.get(this.splitBeeTableUrl + this.notionTechnologiesDatabaseId)
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadGatewayException('Something wrong with notion API - Technologies')
+        }
+
+        return response.data ? response.data : null
+    }
+
+    public async getDifficulties() {
+        let response;
+
+        try {
+            response = await this.splitBeeClient.get(this.splitBeeTableUrl + this.notionDifficultiesDatabaseId)
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadGatewayException('Something wrong with notion API - Difficulties')
         }
 
         return response.data ? response.data : null

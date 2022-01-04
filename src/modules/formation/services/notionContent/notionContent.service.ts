@@ -1,13 +1,15 @@
 import { Injectable, BadRequestException, BadGatewayException } from '@nestjs/common';
 import { Course } from '../../domain/course';
-import { Difficutly } from '../../domain/difficulty';
-import { Formation } from '../../domain/formation';
+import { Difficulty, DifficultyProps } from '../../domain/difficulty';
+import { Formation, FormationProps } from '../../domain/formation';
 import { Prerequisite } from '../../domain/prerequisite';
 import { Slug } from '../../domain/slug';
 import { Tag, TagProps } from '../../domain/tag';
-import { Technology } from '../../domain/technology';
+import { Technology, TechnologyProps } from '../../domain/technology';
+import { DifficultyRepository } from '../../repos/difficultyRepository';
 import { FormationRepository } from '../../repos/formationRepository';
 import { TagRepository } from '../../repos/tagRepository';
+import { technologyRepository } from '../../repos/technologyRepository';
 import { NotionProviderService } from '../notionProvider/notionProvider.service';
 
 interface NotionContent {
@@ -15,7 +17,7 @@ interface NotionContent {
     courses: Course[]
     tags: Tag[]
     technologies: Technology[]
-    difficulties: Difficutly[]
+    difficulties: Difficulty[]
     prerequisites: Prerequisite[]
 }
 
@@ -25,16 +27,20 @@ export class NotionContentService implements NotionContent {
     courses: Course[]
     tags: Tag[]
     technologies: Technology[]
-    difficulties: Difficutly[]
+    difficulties: Difficulty[]
     prerequisites: Prerequisite[]
 
     constructor(
         private notionProviderService: NotionProviderService,
         private formationRepository: FormationRepository,
-        private tagRepository: TagRepository
+        private tagRepository: TagRepository,
+        private technologyRepository: technologyRepository,
+        private difficultyRepository: DifficultyRepository,
     ) {
         this.formations = []
         this.tags = []
+        this.technologies = []
+        this.difficulties = []
     }
 
     public async syncFormationsFromNotion() {
@@ -51,7 +57,7 @@ export class NotionContentService implements NotionContent {
 
                     const courses = await this.syncFormationCourses(formation.courses)
 
-                    const formationProps = {
+                    const formationProps: FormationProps = {
                         slug: formationSlug,
                         notionPageId: formation.id,
                         title: formation.title,
@@ -146,6 +152,92 @@ export class NotionContentService implements NotionContent {
                 }
 
                 this.tags.push(tagDomain)
+            }))
+        }
+        catch (err) {
+            throw new BadRequestException(err.message)
+        }
+    }
+
+    public async syncTechnologies() {
+
+        const technologies = await this.notionProviderService.getTechnologies();
+
+        try {
+            await Promise.all(technologies.map(async technology => {
+                let technologyDomain: Technology;
+
+                const notiontechnology = await this.notionProviderService.getNotionPage(technology.id)
+
+                const name = notiontechnology.properties.name.title[0].plain_text
+                const slug = notiontechnology.properties.slug.rich_text[0].plain_text
+                const icon = notiontechnology.icon.emoji
+
+                const technologyProps: TechnologyProps = {
+                    slug: Slug.create({ value: slug }),
+                    name,
+                    notionPageId: technology.id,
+                    imageUrl: icon
+                }
+
+                const alreadyCreatedtechnology = await this.technologyRepository.getTechnologyByNotionPageId(technology.id)
+
+                if (alreadyCreatedtechnology) {
+
+                    technologyProps.technologyId = alreadyCreatedtechnology.technologyId
+
+                    technologyDomain = Technology.create(technologyProps)
+                    this.technologyRepository.updateTechnology(technologyDomain)
+                } else {
+                    //create formation
+                    technologyDomain = Technology.create(technologyProps)
+                    this.technologyRepository.createTechnology(technologyDomain)
+                }
+
+                this.technologies.push(technologyDomain)
+            }))
+        }
+        catch (err) {
+            throw new BadRequestException(err.message)
+        }
+    }
+
+    public async syncDifficulties() {
+
+        const difficulties = await this.notionProviderService.getDifficulties();
+
+        try {
+            await Promise.all(difficulties.map(async difficulty => {
+                let difficultyDomain: Difficulty;
+
+                const notiondifficulty = await this.notionProviderService.getNotionPage(difficulty.id)
+
+                const name = notiondifficulty.properties.name.title[0].plain_text
+                const slug = notiondifficulty.properties.slug.rich_text[0].plain_text
+                const icon = notiondifficulty.icon.emoji
+
+                const difficultyProps: DifficultyProps = {
+                    slug: Slug.create({ value: slug }),
+                    name,
+                    notionPageId: difficulty.id,
+                    imageUrl: icon
+                }
+
+                const alreadyCreateddifficulty = await this.difficultyRepository.getDifficultyByNotionPageId(difficulty.id)
+
+                if (alreadyCreateddifficulty) {
+
+                    difficultyProps.difficultyId = alreadyCreateddifficulty.difficultyId
+
+                    difficultyDomain = Difficulty.create(difficultyProps)
+                    this.difficultyRepository.updateDifficulty(difficultyDomain)
+                } else {
+                    //create formation
+                    difficultyDomain = Difficulty.create(difficultyProps)
+                    this.difficultyRepository.createDifficulty(difficultyDomain)
+                }
+
+                this.difficulties.push(difficultyDomain)
             }))
         }
         catch (err) {

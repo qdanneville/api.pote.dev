@@ -1,15 +1,15 @@
 import { ValueObject } from 'src/core/domain/ValueObject';
 import { Slug } from './slug';
 
-interface DifficultyProps {
-    difficultyId: number;
+export interface DifficultyProps {
+    difficultyId?: number;
     name: string;
     slug: Slug;
     notionPageId: string
     imageUrl?: string
 }
 
-export class Difficutly extends ValueObject<DifficultyProps> {
+export class Difficulty extends ValueObject<DifficultyProps> {
     get difficultyId(): number {
         return this.props.difficultyId;
     }
@@ -34,8 +34,8 @@ export class Difficutly extends ValueObject<DifficultyProps> {
         super(props);
     }
 
-    public static create(props: DifficultyProps): Difficutly {
-        const difficulty = new Difficutly({ ...props })
+    public static create(props: DifficultyProps): Difficulty {
+        const difficulty = new Difficulty({ ...props })
 
         return difficulty
     }

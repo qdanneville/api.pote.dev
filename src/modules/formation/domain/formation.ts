@@ -4,7 +4,7 @@ import { FormationCreated } from "./events/formationCreated";
 import { FormationId } from "./FormationId";
 import { Slug } from "./slug";
 
-interface FormationProps {
+export interface FormationProps {
     slug: Slug,
     notionPageId: string
     title: string,

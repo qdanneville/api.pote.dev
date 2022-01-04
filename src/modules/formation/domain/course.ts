@@ -4,7 +4,7 @@ import { CourseCreated } from "./events/CourseCreated";
 import { CourseId } from "./CourseId";
 import { Slug } from "./slug";
 import { Prerequisite } from "./prerequisite";
-import { Difficutly } from "./difficulty";
+import { Difficulty } from "./difficulty";
 import { Tag } from "./tag";
 import { Technology } from "./technology";
 
@@ -16,7 +16,7 @@ interface CourseProps {
     tags?: Tag[]
     technologies?: Technology[]
     prerequisites?: Prerequisite[]
-    difficulty: Difficutly
+    difficulty: Difficulty
     isPublished: boolean
     duration?: number
 }
@@ -62,7 +62,7 @@ export class Course extends AggregateRoot<CourseProps> {
         return this.props.technologies
     }
 
-    get difficulty(): Difficutly {
+    get difficulty(): Difficulty {
         return this.props.difficulty
     }
 

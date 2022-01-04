@@ -1,8 +1,8 @@
 import { ValueObject } from 'src/core/domain/ValueObject';
 import { Slug } from './slug';
 
-interface TechnologyProps {
-    technologyId: number;
+export interface TechnologyProps {
+    technologyId?: number;
     name: string;
     slug: Slug;
     notionPageId: string
