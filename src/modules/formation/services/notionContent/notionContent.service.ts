@@ -2,13 +2,14 @@ import { Injectable, BadRequestException, BadGatewayException } from '@nestjs/co
 import { Course } from '../../domain/course';
 import { Difficulty, DifficultyProps } from '../../domain/difficulty';
 import { Formation, FormationProps } from '../../domain/formation';
-import { Prerequisite } from '../../domain/prerequisite';
+import { Prerequisite, PrerequisiteProps } from '../../domain/prerequisite';
 import { Slug } from '../../domain/slug';
 import { Tag, TagProps } from '../../domain/tag';
 import { Technology, TechnologyProps } from '../../domain/technology';
 import { DifficultyRepository } from '../../repos/difficultyRepository';
 import { FormationRepository } from '../../repos/formationRepository';
 import { TagRepository } from '../../repos/tagRepository';
+import { PrerequisiteRepository } from '../../repos/prerequisiteRepository';
 import { technologyRepository } from '../../repos/technologyRepository';
 import { NotionProviderService } from '../notionProvider/notionProvider.service';
 
@@ -36,11 +37,13 @@ export class NotionContentService implements NotionContent {
         private tagRepository: TagRepository,
         private technologyRepository: technologyRepository,
         private difficultyRepository: DifficultyRepository,
+        private prerequisiteRepository: PrerequisiteRepository,
     ) {
         this.formations = []
         this.tags = []
         this.technologies = []
         this.difficulties = []
+        this.prerequisites = []
     }
 
     public async syncFormationsFromNotion() {
@@ -223,11 +226,11 @@ export class NotionContentService implements NotionContent {
                     imageUrl: icon
                 }
 
-                const alreadyCreateddifficulty = await this.difficultyRepository.getDifficultyByNotionPageId(difficulty.id)
+                const alreadyCreatedDifficulty = await this.difficultyRepository.getDifficultyByNotionPageId(difficulty.id)
 
-                if (alreadyCreateddifficulty) {
+                if (alreadyCreatedDifficulty) {
 
-                    difficultyProps.difficultyId = alreadyCreateddifficulty.difficultyId
+                    difficultyProps.difficultyId = alreadyCreatedDifficulty.difficultyId
 
                     difficultyDomain = Difficulty.create(difficultyProps)
                     this.difficultyRepository.updateDifficulty(difficultyDomain)
@@ -238,6 +241,47 @@ export class NotionContentService implements NotionContent {
                 }
 
                 this.difficulties.push(difficultyDomain)
+            }))
+        }
+        catch (err) {
+            throw new BadRequestException(err.message)
+        }
+    }
+
+    public async syncPrerequisites() {
+
+        const prerequisites = await this.notionProviderService.getPrerequisites();
+
+        try {
+            await Promise.all(prerequisites.map(async prerequisite => {
+                let prerequisiteDomain: Prerequisite;
+
+                const notionPrerequisite = await this.notionProviderService.getNotionPage(prerequisite.id)
+
+                const name = notionPrerequisite.properties.name.title[0].plain_text
+                const description = notionPrerequisite.properties.description.rich_text[0].plain_text
+
+                const prerequisiteProps: PrerequisiteProps = {
+                    name,
+                    description,
+                    notionPageId: prerequisite.id,
+                }
+
+                const alreadyCreatedPrerequisite = await this.prerequisiteRepository.getPrerequisiteByNotionPageId(prerequisite.id)
+
+                if (alreadyCreatedPrerequisite) {
+
+                    prerequisiteProps.prerequisiteId = alreadyCreatedPrerequisite.prerequisiteId
+
+                    prerequisiteDomain = Prerequisite.create(prerequisiteProps)
+                    this.prerequisiteRepository.updatePrerequisite(prerequisiteDomain)
+                } else {
+                    //create formation
+                    prerequisiteDomain = Prerequisite.create(prerequisiteProps)
+                    this.prerequisiteRepository.createPrerequisite(prerequisiteDomain)
+                }
+
+                this.prerequisites.push(prerequisiteDomain)
             }))
         }
         catch (err) {

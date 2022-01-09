@@ -24,4 +24,9 @@ export class NotionContentController {
     async getAndCreateNotionDifficulties() {
         return this.notionContentService.syncDifficulties()
     }
+
+    @Post('/prerequisites')
+    async getAndCreateNotionPrerequisites() {
+        return this.notionContentService.syncPrerequisites()
+    }
 }

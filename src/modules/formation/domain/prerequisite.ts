@@ -1,7 +1,7 @@
 import { ValueObject } from 'src/core/domain/ValueObject';
 
-interface PrerequisiteProps {
-    prerequisiteId: number;
+export interface PrerequisiteProps {
+    prerequisiteId?: number;
     name: string;
     notionPageId: string
     description: string;

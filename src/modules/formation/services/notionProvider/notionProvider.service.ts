@@ -185,4 +185,18 @@ export class NotionProviderService implements Notion {
 
         return response.data ? response.data : null
     }
+
+    public async getPrerequisites() {
+        let response;
+
+        try {
+            response = await this.splitBeeClient.get(this.splitBeeTableUrl + this.notionPrerequisitesDatabaseId)
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadGatewayException('Something wrong with notion API - Prerequisites')
+        }
+
+        return response.data ? response.data : null
+    }
 }
