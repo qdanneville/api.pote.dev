@@ -10,7 +10,7 @@ model User {
   role   Role? @relation(fields: [roleId], references: [id])
   roleId Int? @default(1)
 
-  coursesProgressions CourseProgression[]
+  lessonsProgressions LessonProgression[]
   coursesStarted Course[] @relation(name:"coursesStarted")
   coursesSucceeded Course[] @relation(name:"coursesSucceeded")
 

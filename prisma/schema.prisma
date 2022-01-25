@@ -27,13 +27,13 @@ model ChapterStep {
   id    Int @id @default(autoincrement())
   order Int
 
-  courseContent   CourseContent @relation(fields: [courseContentId], references: [id])
-  courseContentId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+  lessonId String
 
   chapter   Chapter @relation(fields: [chapterId], references: [id])
   chapterId String
 
-  courseProgressions CourseProgression[]
+  lessonProgressions LessonProgression[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,7 +69,37 @@ model Course {
   updatedAt DateTime @updatedAt
 }
 
-model CourseContent {
+model Difficulty {
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
+  imageUrl     String?
+
+  formations Formation[]
+  courses    Course[]
+}
+
+model Formation {
+  id           String  @id @default(uuid())
+  slug         String  @unique
+  title        String  @unique
+  notionPageId String  @unique
+  imageUrl     String?
+  isPublished  Boolean @default(false)
+
+  courses Course[]
+
+  difficulty   Difficulty? @relation(fields: [difficultyId], references: [id])
+  difficultyId Int?
+
+  technologies Technology[] @relation(references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String
@@ -83,7 +113,7 @@ model CourseContent {
   updatedAt DateTime @updatedAt
 }
 
-model CourseProgression {
+model LessonProgression {
   id Int @id @default(autoincrement())
 
   user   User   @relation(fields: [userId], references: [id])
@@ -93,30 +123,6 @@ model CourseProgression {
   chapterStepId Int
 
   done Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Difficulty {
-  id           Int     @id @default(autoincrement())
-  slug         String  @unique
-  notionPageId String  @unique
-  name         String  @unique
-  imageUrl     String?
-
-  courses Course[]
-}
-
-model Formation {
-  id           String  @id @default(uuid())
-  slug         String  @unique
-  title        String  @unique
-  notionPageId String  @unique
-  imageUrl     String?
-  isPublished  Boolean @default(false)
-
-  courses Course[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -149,12 +155,14 @@ model Tag {
 }
 
 model Technology {
-  id           Int      @id @default(autoincrement())
-  slug         String   @unique
-  notionPageId String   @unique
-  name         String   @unique
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
   imageUrl     String?
-  courses      Course[] @relation(references: [id])
+
+  courses    Course[]    @relation(references: [id])
+  formations Formation[] @relation(references: [id])
 }
 
 model User {
@@ -169,7 +177,7 @@ model User {
   role   Role? @relation(fields: [roleId], references: [id])
   roleId Int?  @default(1)
 
-  coursesProgressions CourseProgression[]
+  lessonsProgressions LessonProgression[]
   coursesStarted      Course[]            @relation(name: "coursesStarted")
   coursesSucceeded    Course[]            @relation(name: "coursesSucceeded")
 

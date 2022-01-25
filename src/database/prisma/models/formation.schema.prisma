@@ -8,6 +8,11 @@ model Formation {
 
   courses    Course[]
 
+  difficulty   Difficulty? @relation(fields: [difficultyId], references: [id])
+  difficultyId Int?
+
+  technologies          Technology[]          @relation(references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

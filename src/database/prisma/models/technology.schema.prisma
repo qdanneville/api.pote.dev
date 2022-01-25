@@ -4,5 +4,7 @@ model Technology {
   notionPageId String @unique
   name String @unique
   imageUrl String?
+
   courses Course[] @relation(references: [id])
+  formations Formation[] @relation(references: [id])
 }

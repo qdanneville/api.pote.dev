@@ -1,10 +1,13 @@
 import { Formation } from '../domain/formation';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Slug } from '../domain/slug';
+import { Difficulty } from '../domain/difficulty';
+import { Technology } from '../domain/technology';
 
 export class FormationMap {
     public static async toPersistence(formation: Formation): Promise<any> {
-        return {
+
+        const data = {
             id: formation.id.toString(),
             slug: formation.slug.value,
             notionPageId: formation.notionPageId,
@@ -12,17 +15,25 @@ export class FormationMap {
             imageUrl: formation.imageUrl,
             isPublished: formation.isPublished,
         }
+
+        if (formation.difficulty) data["difficultyId"] = formation.difficultyId
+
+        return data
     }
 
     public static async toDomain(raw: any): Promise<Formation> {
-        const slug = Slug.create({value:raw.slug})
+        const slug = Slug.create({ value: raw.slug })
+        const difficulty = Difficulty.create(raw.difficulty)
+        const technologies = raw.technologies?.map(technology => Technology.create(technology))
 
         const formationDomain = Formation.create({
             slug,
             notionPageId: raw.notionPageId,
             title: raw.title,
             isPublished: raw.isPublished,
-            imageUrl: raw.imageUrl
+            imageUrl: raw.imageUrl,
+            difficulty: difficulty,
+            technologies: technologies
         }, new UniqueEntityID(raw.id));
 
         return formationDomain ? formationDomain : null;
