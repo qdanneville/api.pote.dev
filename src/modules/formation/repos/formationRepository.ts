@@ -52,9 +52,21 @@ export class FormationRepository {
         if (!exists) {
             const rawPrismaFormation = await FormationMap.toPersistence(formation)
 
+            const { technologies, difficultyId, ...data } = rawPrismaFormation
+
+            const dataToInsert = {
+                ...data,
+                difficulty: difficultyId
+                    ? { connect: { id: difficultyId } }
+                    : undefined,
+                technologies: technologies.length > 0
+                    ? { set: technologies }
+                    : undefined
+            }
+
             await FormationModel.create({
                 data: {
-                    ...rawPrismaFormation,
+                    ...dataToInsert
                 },
             });
         }
@@ -66,14 +78,24 @@ export class FormationRepository {
         const FormationModel = this.entities.formation
         const rawPrismaFormation = await FormationMap.toPersistence(formation)
 
-        const { id } = rawPrismaFormation
+        const { id, technologies, difficultyId, ...data } = rawPrismaFormation
+
+        const dataToInsert = {
+            ...data,
+            difficulty: difficultyId
+                ? { connect: { id: difficultyId } }
+                : { disconnect: true },
+            technologies: {
+                set: technologies
+            }
+        }
 
         await FormationModel.update({
             where: {
                 id,
             },
             data: {
-                ...rawPrismaFormation,
+                ...dataToInsert
             },
         });
 

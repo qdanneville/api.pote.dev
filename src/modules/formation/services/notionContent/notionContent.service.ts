@@ -54,6 +54,7 @@ export class NotionContentService implements NotionContent {
                 if (formation.isPublished) {
                     let formationDomain: Formation
                     let difficulty: Difficulty;
+                    let technologies: Technology[];
 
                     const notionFormation = await this.notionProviderService.getSplitBeePage(formation.id)
                     const formationDetail = notionFormation[Object.keys(notionFormation)[0]].value
@@ -69,10 +70,14 @@ export class NotionContentService implements NotionContent {
                         isPublished: formation.isPublished,
                     }
 
-
                     if (formation.difficulty) {
                         difficulty = await this.difficultyRepository.getDifficultyByNotionPageId(formation.difficulty[0])
                         formationProps['difficulty'] = difficulty
+                    }
+
+                    if (formation.technologies) {
+                        technologies = await Promise.all(formation.technologies?.map(async (technology) => (await this.technologyRepository.getTechnologyByNotionPageId(technology)).technologyId))
+                        formationProps['technologies'] = technologies
                     }
 
                     const alreadyCreatedFormation = await this.formationRepository.getFormationByNotionPageId(formation.id)

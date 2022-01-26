@@ -16,7 +16,8 @@ export class FormationMap {
             isPublished: formation.isPublished,
         }
 
-        if (formation.difficulty) data["difficultyId"] = formation.difficultyId
+        data["difficultyId"] = formation.difficulty ? formation.difficultyId : null
+        data["technologies"] = formation.technologies ? formation.technologies.map(technology => ({ id: technology })) : []
 
         return data
     }
