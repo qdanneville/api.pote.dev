@@ -14,10 +14,9 @@ export class FormationMap {
             title: formation.title,
             imageUrl: formation.imageUrl,
             isPublished: formation.isPublished,
+            difficultyId: formation.difficulty ? formation.difficultyId : null,
+            technologies: formation.technologies ? formation.technologies.map(technology => ({ id: technology })) : []
         }
-
-        data["difficultyId"] = formation.difficulty ? formation.difficultyId : null
-        data["technologies"] = formation.technologies ? formation.technologies.map(technology => ({ id: technology })) : []
 
         return data
     }

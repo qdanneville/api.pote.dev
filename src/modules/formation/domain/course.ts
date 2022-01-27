@@ -8,7 +8,7 @@ import { Difficulty } from "./difficulty";
 import { Tag } from "./tag";
 import { Technology } from "./technology";
 
-interface CourseProps {
+export interface CourseProps {
     title: string
     slug: Slug
     notionPageId: string
@@ -19,6 +19,7 @@ interface CourseProps {
     difficulty: Difficulty
     isPublished: boolean
     duration?: number
+    order?: number
 }
 
 export class Course extends AggregateRoot<CourseProps> {
@@ -54,6 +55,10 @@ export class Course extends AggregateRoot<CourseProps> {
         return this.props.duration
     }
 
+    get order(): number {
+        return this.props.order
+    }
+
     get tags(): Tag[] {
         return this.props.tags
     }
@@ -64,6 +69,10 @@ export class Course extends AggregateRoot<CourseProps> {
 
     get difficulty(): Difficulty {
         return this.props.difficulty
+    }
+
+    get difficultyId(): number {
+        return this.props.difficulty.difficultyId
     }
 
     get prerequisites(): Prerequisite[] {

@@ -144,6 +144,20 @@ export class NotionProviderService implements Notion {
         return response.data ? response.data : null
     }
 
+    public async getCourses() {
+        let response;
+
+        try {
+            response = await this.splitBeeClient.get(this.splitBeeTableUrl + this.notionCoursesDatabaseId)
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadGatewayException('Something wrong with notion API - Courses')
+        }
+
+        return response.data ? response.data : null
+    }
+
     public async getTags() {
         let response;
 

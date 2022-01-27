@@ -11,8 +11,8 @@ model Chapter {
   id       String @id @default(uuid())
   slug     String @unique
   title    String
-  order    Int    @default(0)
-  duration Int
+  order    Int?   @default(0)
+  duration Int?
 
   course   Course @relation(fields: [courseId], references: [id])
   courseId String
@@ -42,21 +42,22 @@ model ChapterStep {
 model Course {
   id           String  @id @default(uuid())
   slug         String  @unique
-  title        String
+  title        String  @unique
   notionPageId String  @unique
   imageUrl     String?
-  duration     Int
+  duration     Int?
+  order        Int?    @default(0)
 
   chapters      Chapter[]
   prerequisites Prerequisite[] @relation(references: [id])
   tags          Tag[]          @relation(references: [id])
   technologies  Technology[]   @relation(references: [id])
 
-  formation   Formation @relation(fields: [formationId], references: [id])
-  formationId String
+  formation   Formation? @relation(fields: [formationId], references: [id])
+  formationId String?
 
-  diffiulty   Difficulty @relation(fields: [diffiultyId], references: [id])
-  diffiultyId Int
+  difficulty  Difficulty? @relation(fields: [diffiultyId], references: [id])
+  diffiultyId Int?
 
   tryingUsers       User?   @relation("coursesStarted", fields: [tryingUserId], references: [id])
   successfullUsers  User?   @relation("coursesSucceeded", fields: [successfullUserId], references: [id])
@@ -105,7 +106,8 @@ model Lesson {
   title        String
   notionPageId String  @unique
   imageUrl     String?
-  duration     Int
+  duration     Int?
+  order        Int     @default(0)
 
   chapterSteps ChapterStep[]
 

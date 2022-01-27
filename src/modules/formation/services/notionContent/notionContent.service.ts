@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, BadGatewayException } from '@nestjs/common';
-import { Course } from '../../domain/course';
+import { Course, CourseProps } from '../../domain/course';
 import { Difficulty, DifficultyProps } from '../../domain/difficulty';
 import { Formation, FormationProps } from '../../domain/formation';
 import { Prerequisite, PrerequisiteProps } from '../../domain/prerequisite';
@@ -12,6 +12,7 @@ import { TagRepository } from '../../repos/tagRepository';
 import { PrerequisiteRepository } from '../../repos/prerequisiteRepository';
 import { technologyRepository } from '../../repos/technologyRepository';
 import { NotionProviderService } from '../notionProvider/notionProvider.service';
+import { CourseRepository } from '../../repos/courseRepository';
 
 interface NotionContent {
     formations: Formation[]
@@ -34,12 +35,14 @@ export class NotionContentService implements NotionContent {
     constructor(
         private notionProviderService: NotionProviderService,
         private formationRepository: FormationRepository,
+        private courseRepository: CourseRepository,
         private tagRepository: TagRepository,
         private technologyRepository: technologyRepository,
         private difficultyRepository: DifficultyRepository,
         private prerequisiteRepository: PrerequisiteRepository,
     ) {
         this.formations = []
+        this.courses = []
         this.tags = []
         this.technologies = []
         this.difficulties = []
@@ -59,8 +62,6 @@ export class NotionContentService implements NotionContent {
                     const notionFormation = await this.notionProviderService.getSplitBeePage(formation.id)
                     const formationDetail = notionFormation[Object.keys(notionFormation)[0]].value
                     const formationSlug = Slug.create({ value: formation.slug })
-
-                    const courses = await this.syncFormationCourses(formation.courses)
 
                     const formationProps: FormationProps = {
                         slug: formationSlug,
@@ -101,34 +102,58 @@ export class NotionContentService implements NotionContent {
         }
     }
 
-    public async syncFormationCourses(courses) {
-        // if (courses && courses.length > 0) {
-        //     return await Promise.all(courses.map(async (courseId) => {
-        //         console.log('course page id : ', courseId)
-        //         const notionCourse = await this.notionProviderService.getNotionPage(courseId)
-        //         console.log('course page from notion API : ', notionCourse)
+    public async syncCourses() {
 
-        //         const notionTags = notionCourse.properties.tags.relation
-        //         console.log(notionTags)
-        //         await this.syncTags(notionTags);
+        const courses = await this.notionProviderService.getCourses();
 
-        //         // const courseDetail = notionCourse[Object.keys(notionCourse)[0]].value
+        try {
+            await Promise.all(courses.map(async course => {
+                let courseDomain: Course;
 
-        //         // console.log('course detail :', courseDetail);
+                const notionCourse = await this.notionProviderService.getNotionPage(course.id)
 
-        //         // const formationProps = {
-        //         //     slug: formation.slug,
-        //         //     notionPageId: formation.id,
-        //         //     title: formation.title,
-        //         //     imageUrl: formationDetail.format?.page_cover ? formationDetail.format?.page_cover : null,
-        //         // }
+                console.log('course from notion ', notionCourse)
 
-        //         // const formationDomain = Formation.create(formationProps)
-        //         // await this.formationRepository.createOrUpdateFormation(formationDomain)
+                const title = notionCourse.properties.title.title[0].plain_text
+                const slug = notionCourse.properties.slug.rich_text[0].plain_text
+                const icon = notionCourse.icon.emoji
+                const order = notionCourse.properties.order
+                const difficulty: Difficulty = await this.difficultyRepository.getDifficultyByNotionPageId(course.difficulty[0])
+                const technologies: Technology[] = await Promise.all(course.technologies?.map(async (technology) => (await this.technologyRepository.getTechnologyByNotionPageId(technology)).technologyId))
+                const tags: Tag[] = await Promise.all(course.tags?.map(async (tag) => (await this.tagRepository.getTagByNotionPageId(tag)).tagId))
+                const prerequisites: Prerequisite[] = await Promise.all(course.prerequisites?.map(async (prerequisite) => (await this.prerequisiteRepository.getPrerequisiteByNotionPageId(prerequisite)).prerequisiteId))
 
-        //         // this.formations.push(formationDomain)
-        //     }));
-        // }
+                const courseProps: CourseProps = {
+                    slug: Slug.create({ value: slug }),
+                    title,
+                    notionPageId: course.id,
+                    imageUrl: icon,
+                    isPublished: course.isPublished,
+                    order,
+                    difficulty,
+                    technologies,
+                    tags,
+                    prerequisites
+                }
+
+                const alreadyCreatedCourse = await this.courseRepository.getCourseByNotionPageId(course.id)
+
+                if (alreadyCreatedCourse) {
+                    //update Course
+                    courseDomain = Course.create(courseProps, alreadyCreatedCourse.id)
+                    this.courseRepository.updateCourse(courseDomain)
+                } else {
+                    //create Course
+                    courseDomain = Course.create(courseProps)
+                    this.courseRepository.createCourse(courseDomain)
+                }
+
+                this.courses.push(courseDomain)
+            }))
+        }
+        catch (err) {
+            throw new BadRequestException(err.message)
+        }
     }
 
     public async syncTags() {

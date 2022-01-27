@@ -10,6 +10,11 @@ export class NotionContentController {
         return this.notionContentService.syncFormationsFromNotion()
     }
 
+    @Post('/courses')
+    async getAndCreateNotionCourses() {
+        return this.notionContentService.syncCourses()
+    }
+
     @Post('/tags')
     async getAndCreateNotionTags() {
         return this.notionContentService.syncTags()

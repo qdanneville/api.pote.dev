@@ -4,7 +4,8 @@ model Lesson {
   title        String
   notionPageId String @unique
   imageUrl     String?
-  duration     Int
+  duration     Int?
+  order Int @default(0)
 
   chapterSteps ChapterStep[]
 
