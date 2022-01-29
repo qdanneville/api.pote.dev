@@ -53,6 +53,7 @@ const config: Config = {
         notionToken: process.env.NOTION_TOKEN,
         notionFormationsDatabaseId: process.env.NOTION_FORMATIONS_DATABASE_ID,
         notionCoursesDatabaseId: process.env.NOTION_COURSES_DATABASE_ID,
+        notionChaptersDatabaseId: process.env.NOTION_CHAPTERS_DATABASE_ID,
         notionTagsDatabaseId: process.env.NOTION_TAGS_DATABASE_ID,
         notionDifficultiesDatabaseId: process.env.NOTION_DIFFICULTIES_DATABASE_ID,
         notionPrerequisitesDatabaseId: process.env.NOTION_PREREQUISITES_DATABASE_ID,

@@ -3,6 +3,8 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Slug } from '../domain/slug';
 import { Difficulty } from '../domain/difficulty';
 import { Technology } from '../domain/technology';
+import { DifficultyMap } from './difficultyMap';
+import { TechnologyMap } from './technologyMap';
 
 export class FormationMap {
     public static async toPersistence(formation: Formation): Promise<any> {
@@ -23,8 +25,8 @@ export class FormationMap {
 
     public static async toDomain(raw: any): Promise<Formation> {
         const slug = Slug.create({ value: raw.slug })
-        const difficulty = Difficulty.create(raw.difficulty)
-        const technologies = raw.technologies?.map(technology => Technology.create(technology))
+        const difficulty = await DifficultyMap.toDomain(raw.difficulty)
+        const technologies = raw.technologies?.map(technology => TechnologyMap.toDomain(technology))
 
         const formationDomain = Formation.create({
             slug,

@@ -1,17 +1,17 @@
 import { IDomainEvent } from "../../../../core/domain/events/IDomainEvent";
 import { UniqueEntityID } from "../../../../core/domain/UniqueEntityID";
-import { Formation } from "../formation";
+import { Lesson } from "../lesson";
 
-export class FormationCreated implements IDomainEvent {
+export class LessonCreated implements IDomainEvent {
     public dateTimeOccurred: Date;
-    public formation: Formation;
+    public lesson: Lesson;
 
-    constructor(Formation: Formation) {
+    constructor(lesson: Lesson) {
         this.dateTimeOccurred = new Date();
-        this.formation = Formation;
+        this.lesson = lesson;
     }
 
     getAggregateId(): UniqueEntityID {
-        return this.formation.id;
+        return this.lesson.id;
     }
 }

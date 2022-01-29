@@ -69,6 +69,7 @@ export interface NotionConfig {
     notionToken: string
     notionFormationsDatabaseId: string
     notionCoursesDatabaseId: string
+    notionChaptersDatabaseId: string
     notionTagsDatabaseId: string
     notionDifficultiesDatabaseId: string
     notionPrerequisitesDatabaseId: string

@@ -1,6 +1,6 @@
 import { IDomainEvent } from "../../../../core/domain/events/IDomainEvent";
 import { UniqueEntityID } from "../../../../core/domain/UniqueEntityID";
-import { Course } from "../Course";
+import { Course } from "../course";
 
 export class CourseCreated implements IDomainEvent {
     public dateTimeOccurred: Date;

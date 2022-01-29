@@ -15,6 +15,11 @@ export class NotionContentController {
         return this.notionContentService.syncCourses()
     }
 
+    @Post('/chapters')
+    async getAndCreateNotionChapters() {
+        return this.notionContentService.syncChapters()
+    }
+
     @Post('/tags')
     async getAndCreateNotionTags() {
         return this.notionContentService.syncTags()

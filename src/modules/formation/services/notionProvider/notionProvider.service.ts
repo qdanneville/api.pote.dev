@@ -43,6 +43,7 @@ export class NotionProviderService implements Notion {
 
     notionFormationsDatabaseId: string
     notionCoursesDatabaseId: string
+    notionChaptersDatabaseId: string
     notionTagsDatabaseId: string
     notionTechnologiesDatabaseId: string
     notionPrerequisitesDatabaseId: string
@@ -59,6 +60,7 @@ export class NotionProviderService implements Notion {
 
         this.notionFormationsDatabaseId = this.configService.get<string>('notion.notionFormationsDatabaseId');
         this.notionCoursesDatabaseId = this.configService.get<string>('notion.notionCoursesDatabaseId');
+        this.notionChaptersDatabaseId = this.configService.get<string>('notion.notionChaptersDatabaseId');
         this.notionTagsDatabaseId = this.configService.get<string>('notion.notionTagsDatabaseId');
         this.notionTechnologiesDatabaseId = this.configService.get<string>('notion.notionTechnologiesDatabaseId');
         this.notionPrerequisitesDatabaseId = this.configService.get<string>('notion.notionPrerequisitesDatabaseId');
@@ -104,7 +106,6 @@ export class NotionProviderService implements Notion {
 
         try {
             response = await this.splitBeeClient.get(this.splitBeePageUrl + pageId)
-            // console.log('Notion API page response = ', response)
         }
         catch (err) {
             console.log(err.message)
@@ -118,9 +119,7 @@ export class NotionProviderService implements Notion {
         let response;
 
         try {
-            console.log('Notion API table id ', tableId)
             response = await this.splitBeeClient.get(this.splitBeeTableUrl + tableId)
-            console.log('data', response.data)
         }
         catch (err) {
             console.log(err.message)
@@ -153,6 +152,35 @@ export class NotionProviderService implements Notion {
         catch (err) {
             console.log(err.message)
             throw new BadGatewayException('Something wrong with notion API - Courses')
+        }
+
+        return response.data ? response.data : null
+    }
+
+    public async getChapters() {
+        let response;
+
+        try {
+            response = await this.splitBeeClient.get(this.splitBeeTableUrl + this.notionChaptersDatabaseId)
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadGatewayException('Something wrong with notion API - Chapters')
+        }
+
+        return response.data ? response.data : null
+    }
+
+    public async getChapterLessons(chapterId: string) {
+        let response;
+
+        try {
+            const chapterLessonsDatabaseId = (await this.notionClient.get(`blocks/${chapterId}/children`)).data?.results[0]?.id;
+            response = await this.splitBeeClient.get(this.splitBeeTableUrl + chapterLessonsDatabaseId)
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadGatewayException('Something wrong with notion API - Lessons')
         }
 
         return response.data ? response.data : null

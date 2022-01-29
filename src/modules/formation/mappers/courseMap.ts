@@ -5,6 +5,10 @@ import { Difficulty } from '../domain/difficulty';
 import { Technology } from '../domain/technology';
 import { Tag } from '../domain/Tag';
 import { Prerequisite } from '../domain/prerequisite';
+import { TagMap } from './TagMap';
+import { PrerequisiteMap } from './prerequisiteMap';
+import { TechnologyMap } from './technologyMap';
+import { DifficultyMap } from './difficultyMap';
 
 export class CourseMap {
     public static async toPersistence(course: Course): Promise<any> {
@@ -27,10 +31,10 @@ export class CourseMap {
 
     public static async toDomain(raw: any): Promise<Course> {
         const slug = Slug.create({ value: raw.slug })
-        const difficulty = Difficulty.create(raw.difficulty)
-        const technologies = raw.technologies?.map(technology => Technology.create(technology))
-        const tags = raw.tags?.map(tag => Tag.create(tag))
-        const prerequisites = raw.prerequisites?.map(prerequisite => Prerequisite.create(prerequisite))
+        const difficulty: Difficulty = await DifficultyMap.toDomain(raw.difficulty)
+        const technologies: Technology[] = raw.technologies?.map(technology => TechnologyMap.toDomain(technology))
+        const tags: Tag[] = raw.tags?.map(tag => TagMap.toDomain(tag))
+        const prerequisites: Prerequisite[] = raw.prerequisites?.map(prerequisite => PrerequisiteMap.toDomain(prerequisite))
 
         const courseDomain = Course.create({
             slug,

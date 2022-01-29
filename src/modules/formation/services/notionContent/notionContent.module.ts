@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ChapterRepository } from '../../repos/chapterRepository';
 import { CourseRepository } from '../../repos/courseRepository';
 import { DifficultyRepository } from '../../repos/difficultyRepository';
 import { FormationRepository } from '../../repos/formationRepository';
+import { LessonRepository } from '../../repos/lessonRepository';
 import { PrerequisiteRepository } from '../../repos/prerequisiteRepository';
 import { TagRepository } from '../../repos/tagRepository';
 import { technologyRepository } from '../../repos/technologyRepository';
@@ -10,7 +12,7 @@ import { NotionContentController } from './notionContent.controller';
 import { NotionContentService } from './notionContent.service';
 
 @Module({
-    providers: [NotionProviderService, NotionContentService, FormationRepository, TagRepository, technologyRepository, DifficultyRepository, PrerequisiteRepository, CourseRepository],
+    providers: [NotionProviderService, NotionContentService, FormationRepository, TagRepository, technologyRepository, DifficultyRepository, PrerequisiteRepository, CourseRepository, ChapterRepository, LessonRepository],
     controllers: [NotionContentController],
     exports: [NotionContentService]
 })

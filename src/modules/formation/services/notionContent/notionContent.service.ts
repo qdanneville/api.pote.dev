@@ -13,6 +13,10 @@ import { PrerequisiteRepository } from '../../repos/prerequisiteRepository';
 import { technologyRepository } from '../../repos/technologyRepository';
 import { NotionProviderService } from '../notionProvider/notionProvider.service';
 import { CourseRepository } from '../../repos/courseRepository';
+import { Chapter, ChapterProps } from '../../domain/chapter';
+import { ChapterRepository } from '../../repos/chapterRepository';
+import { Lesson, LessonProps } from '../../domain/lesson';
+import { LessonRepository } from '../../repos/lessonRepository';
 
 interface NotionContent {
     formations: Formation[]
@@ -27,6 +31,8 @@ interface NotionContent {
 export class NotionContentService implements NotionContent {
     formations: Formation[]
     courses: Course[]
+    chapters: Chapter[]
+    lessons: Lesson[]
     tags: Tag[]
     technologies: Technology[]
     difficulties: Difficulty[]
@@ -36,6 +42,8 @@ export class NotionContentService implements NotionContent {
         private notionProviderService: NotionProviderService,
         private formationRepository: FormationRepository,
         private courseRepository: CourseRepository,
+        private chapterRepository: ChapterRepository,
+        private lessonRepository: LessonRepository,
         private tagRepository: TagRepository,
         private technologyRepository: technologyRepository,
         private difficultyRepository: DifficultyRepository,
@@ -43,6 +51,8 @@ export class NotionContentService implements NotionContent {
     ) {
         this.formations = []
         this.courses = []
+        this.chapters = []
+        this.lessons = []
         this.tags = []
         this.technologies = []
         this.difficulties = []
@@ -112,12 +122,10 @@ export class NotionContentService implements NotionContent {
 
                 const notionCourse = await this.notionProviderService.getNotionPage(course.id)
 
-                console.log('course from notion ', notionCourse)
-
                 const title = notionCourse.properties.title.title[0].plain_text
                 const slug = notionCourse.properties.slug.rich_text[0].plain_text
                 const icon = notionCourse.icon.emoji
-                const order = notionCourse.properties.order
+                const order = notionCourse.properties.order?.number
                 const difficulty: Difficulty = await this.difficultyRepository.getDifficultyByNotionPageId(course.difficulty[0])
                 const technologies: Technology[] = await Promise.all(course.technologies?.map(async (technology) => (await this.technologyRepository.getTechnologyByNotionPageId(technology)).technologyId))
                 const tags: Tag[] = await Promise.all(course.tags?.map(async (tag) => (await this.tagRepository.getTagByNotionPageId(tag)).tagId))
@@ -155,6 +163,105 @@ export class NotionContentService implements NotionContent {
             throw new BadRequestException(err.message)
         }
     }
+
+    public async syncChapters() {
+
+        const chapters = await this.notionProviderService.getChapters();
+
+        try {
+            await Promise.all(chapters.map(async chapter => {
+                let chapterDomain: Chapter;
+
+                const notionChapter = await this.notionProviderService.getNotionPage(chapter.id)
+
+                const title = notionChapter.properties.title.title[0].plain_text
+                const slug = notionChapter.properties.slug.rich_text[0].plain_text
+                const icon = notionChapter.icon.emoji
+                const order = notionChapter.properties.order?.number
+                const course: Course = await this.courseRepository.getCourseByNotionPageId(chapter.course[0])
+                // const lessons: [] = await Promise.all(course.technologies?.map(async (technology) => (await this.technologyRepository.getTechnologyByNotionPageId(technology)).technologyId))
+
+                const lessons = await this.notionProviderService.getChapterLessons(chapter.id);
+
+
+                //Create or update lessons
+                const chapterProps: ChapterProps = {
+                    slug: Slug.create({ value: slug }),
+                    title,
+                    notionPageId: chapter.id,
+                    imageUrl: icon,
+                    order,
+                    course
+                }
+
+                const alreadyCreatedChapter = await this.chapterRepository.getChapterByNotionPageId(chapter.id)
+
+                if (alreadyCreatedChapter) {
+                    //update Chapter
+                    chapterDomain = Chapter.create(chapterProps, alreadyCreatedChapter.id)
+                    this.chapterRepository.updateChapter(chapterDomain)
+                } else {
+                    //create Chapter
+                    chapterDomain = Chapter.create(chapterProps)
+                    this.chapterRepository.createChapter(chapterDomain)
+                }
+
+                const chapterLessons = await this.syncLessons(lessons, chapterDomain)
+                this.chapters.push(chapterDomain)
+            }))
+        }
+        catch (err) {
+            console.log(err.message);
+            throw new BadRequestException(err.message)
+        }
+    }
+
+    public async syncLessons(lessons, chapter: Chapter) {
+        try {
+            return await Promise.all(lessons.map(async lesson => {
+                let lessonDomain: Lesson
+
+                const notionLesson = await this.notionProviderService.getNotionPage(lesson.id)
+
+                const title = lesson.title
+                const slug = lesson.slug
+                const icon = notionLesson?.icon?.emoji
+                const order = lesson.order
+                const duration = lesson.duration
+
+                const lessonProps: LessonProps = {
+                    slug: Slug.create({ value: slug }),
+                    title,
+                    notionPageId: lesson.id,
+                    imageUrl: icon,
+                    order,
+                    duration,
+                    chapter: chapter
+                }
+
+                const alreadyCreatedLesson = await this.lessonRepository.getLessonByNotionPageId(lesson.id)
+
+                if (alreadyCreatedLesson) {
+                    //update Lesson
+                    lessonDomain = Lesson.create(lessonProps, alreadyCreatedLesson.id)
+                    this.lessonRepository.updateLesson(lessonDomain)
+                } else {
+                    //create Lesson
+                    lessonDomain = Lesson.create(lessonProps)
+                    this.lessonRepository.createLesson(lessonDomain)
+                }
+
+                this.lessons.push(lessonDomain)
+
+                return lessonDomain
+            }))
+        }
+        catch (err) {
+            console.log(err.message)
+            throw new BadRequestException(err.message)
+        }
+    }
+
 
     public async syncTags() {
 

@@ -1,13 +1,14 @@
 model Lesson {
   id           String  @id @default(uuid())
   slug         String  @unique
-  title        String
+  title        String @unique
   notionPageId String @unique
   imageUrl     String?
   duration     Int?
   order Int @default(0)
 
-  chapterSteps ChapterStep[]
+  chapter   Chapter? @relation(fields: [chapterId], references: [id])
+  chapterId String?
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

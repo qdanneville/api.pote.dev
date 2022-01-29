@@ -39,6 +39,12 @@ export class CourseRepository {
             where: {
                 notionPageId: notionPageId,
             },
+            include: {
+                difficulty: true,
+                technologies: true,
+                tags: true,
+                prerequisites: true
+            }
         });
 
         return course ? CourseMap.toDomain(course) : null;
@@ -70,12 +76,10 @@ export class CourseRepository {
                     : undefined
             }
 
-            console.log('data inserted : ', dataToInsert);
-
             await CourseModel.create({
                 data: {
                     ...dataToInsert
-                },
+                }
             });
         }
 
@@ -104,15 +108,13 @@ export class CourseRepository {
             }
         }
 
-        console.log('data inserted : ', dataToInsert);
-
         await CourseModel.update({
             where: {
                 id,
             },
             data: {
                 ...dataToInsert
-            },
+            }
         });
 
         return

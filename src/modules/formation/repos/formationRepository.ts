@@ -39,6 +39,9 @@ export class FormationRepository {
             where: {
                 notionPageId: notionPageId,
             },
+            include: {
+                difficulty: true
+            }
         });
 
         return formation ? FormationMap.toDomain(formation) : null;
