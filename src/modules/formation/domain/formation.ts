@@ -1,5 +1,6 @@
 import { AggregateRoot } from "../../../core/domain/AggregateRoot";
 import { UniqueEntityID } from "../../../core/domain/UniqueEntityID";
+import { Course } from "./course";
 import { Difficulty } from "./difficulty";
 import { FormationCreated } from "./events/formationCreated";
 import { FormationId } from "./FormationId";
@@ -12,6 +13,7 @@ export interface FormationProps {
     title: string,
     imageUrl?: string,
     isPublished?: boolean
+    courses?: Course[]
     difficulty?: Difficulty
     technologies?: Technology[]
 }
@@ -43,6 +45,10 @@ export class Formation extends AggregateRoot<FormationProps> {
 
     get imageUrl(): string {
         return this.props.imageUrl
+    }
+
+    get courses(): Course[] {
+        return this.props.courses
     }
 
     get difficulty(): Difficulty {

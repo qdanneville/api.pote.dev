@@ -66,6 +66,7 @@ export class NotionContentService implements NotionContent {
             await Promise.all(formations.map(async (formation) => {
                 if (formation.isPublished) {
                     let formationDomain: Formation
+                    let courses: Course[]
                     let difficulty: Difficulty;
                     let technologies: Technology[];
 
@@ -79,6 +80,11 @@ export class NotionContentService implements NotionContent {
                         title: formation.title,
                         imageUrl: formationDetail.format?.page_cover ? formationDetail.format?.page_cover : null,
                         isPublished: formation.isPublished,
+                    }
+
+                    if (formation.courses) {
+                        courses = await Promise.all(formation.courses?.map(async (course) => (await this.courseRepository.getCourseByNotionPageId(course)).id.toString()))
+                        formationProps['courses'] = courses
                     }
 
                     if (formation.difficulty) {

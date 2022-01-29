@@ -16,6 +16,7 @@ export class FormationMap {
             title: formation.title,
             imageUrl: formation.imageUrl,
             isPublished: formation.isPublished,
+            courses: formation.courses ? formation.courses.map(course => ({ id: course })) : [],
             difficultyId: formation.difficulty ? formation.difficultyId : null,
             technologies: formation.technologies ? formation.technologies.map(technology => ({ id: technology })) : []
         }
