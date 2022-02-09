@@ -53,8 +53,6 @@ services:
       - postgres
       - redis
       - nestjs
-networks:
-  webnet:
 volumes:
   postgres:
     name: potedev-db

@@ -35,7 +35,7 @@ build:
     - docker pull $IMAGE:redis || true
     - docker pull $IMAGE:nestjs || true
     - docker pull $IMAGE:nginx || true
-    - docker-compose up --build -d
+    - docker-compose build --no-cache
     - docker push $IMAGE:postgres
     - docker push $IMAGE:redis
     - docker push $IMAGE:nestjs
