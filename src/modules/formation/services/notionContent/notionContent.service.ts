@@ -59,7 +59,17 @@ export class NotionContentService implements NotionContent {
         this.prerequisites = []
     }
 
-    public async syncFormationsFromNotion() {
+    public async syncContentFromNotion() {
+        await this.syncPrerequisites()
+        await this.syncDifficulties()
+        await this.syncTechnologies()
+        await this.syncTags()
+        await this.syncCourses()
+        await this.syncChapters()
+        await this.syncFormations()
+    }
+
+    public async syncFormations() {
         const formations = await this.notionProviderService.getFormations();
 
         try {

@@ -1,7 +1,7 @@
-import { Chapter } from '../domain/Chapter'
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Chapter } from '../domain/chapter'
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma/prisma.service'
-import { ChapterMap } from '../mappers/ChapterMap';
+import { ChapterMap } from '../mappers/chapterMap';
 
 @Injectable()
 export class ChapterRepository {

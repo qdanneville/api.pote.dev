@@ -3,7 +3,7 @@ import { UniqueEntityID } from "../../../core/domain/UniqueEntityID";
 import { Course } from "./course";
 import { Difficulty } from "./difficulty";
 import { FormationCreated } from "./events/formationCreated";
-import { FormationId } from "./FormationId";
+import { FormationId } from "./formationId";
 import { Slug } from "./slug";
 import { Technology } from "./technology";
 

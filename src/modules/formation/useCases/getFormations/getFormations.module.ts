@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { NotionProviderService } from '../../services/notionProvider/notionProvider.service';
-import { GetFormations } from './getFormations.service';
+import { FormationRepository } from '../../repos/formationRepository';
+import { GetFormationsController } from './getFormations.controller';
+import { GetFormationsService } from './getFormations.service';
 
 @Module({
-    providers: [NotionProviderService, GetFormations],
-    exports: [GetFormations],
+    providers: [FormationRepository, GetFormationsService],
+    controllers: [GetFormationsController],
+    exports: [GetFormationsService],
 })
-export class GetPageModule { }
+export class GetFormationsModule { }

@@ -1,11 +1,11 @@
-import { Course } from '../domain/Course';
+import { Course } from '../domain/course';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Slug } from '../domain/slug';
 import { Difficulty } from '../domain/difficulty';
 import { Technology } from '../domain/technology';
-import { Tag } from '../domain/Tag';
+import { Tag } from '../domain/tag';
 import { Prerequisite } from '../domain/prerequisite';
-import { TagMap } from './TagMap';
+import { TagMap } from './tagMap';
 import { PrerequisiteMap } from './prerequisiteMap';
 import { TechnologyMap } from './technologyMap';
 import { DifficultyMap } from './difficultyMap';

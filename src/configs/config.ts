@@ -6,7 +6,7 @@ const config: Config = {
     },
     cors: {
         enabled: true,
-        origin: ['http://localhost:1234', "https://www.notion.so/"],
+        origin: ['http://localhost:1234', "https://www.notion.so/", "http://localhost:3001"],
         credentials: true
     },
     swagger: {
@@ -21,7 +21,6 @@ const config: Config = {
         refreshIn: parseInt(process.env.JWT_REFRESH_IN),
         jwtSecret: process.env.JWT_SECRET,
         refreshSecret: process.env.JWT_REFRESH_SECRET,
-        bcryptSaltOrRound: 10,
         verifyEmailTokenExpiresIn: process.env.VERIFFY_EMAIL_TOKEN_EXPIRES_IN,
         forgotPasswordTokenExpiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
     },

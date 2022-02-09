@@ -1,0 +1,53 @@
+image:
+  name: docker/compose:1.27.4
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - "which ssh-agent || (apk update && apk add openssh)"
+  - apk add bash
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 700 ~/.ssh/id_rsa
+  - eval "$(ssh-agent -s)"
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - chmod 644 ~/.ssh/known_hosts
+  - export IMAGE=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - docker login registry.gitlab.com -u $USERNAME -p $TOKEN
+  - bash ./scripts/setup_env.sh
+
+
+build:
+  stage: build
+  script:
+    - export POSTGRES_IMAGE=$IMAGE:postgres
+    - export REDIS_IMAGE=$IMAGE:redis
+    - export NESTJS_IMAGE=$IMAGE:nestjs
+    - export NGINX_IMAGE=$IMAGE:nginx
+    - docker pull $IMAGE:postgres || true
+    - docker pull $IMAGE:redis || true
+    - docker pull $IMAGE:nestjs || true
+    - docker pull $IMAGE:nginx || true
+    - docker-compose up --build -d
+    - docker push $IMAGE:postgres
+    - docker push $IMAGE:redis
+    - docker push $IMAGE:nestjs
+    - docker push $IMAGE:nginx
+
+deploy:
+  stage: deploy
+  script:
+    - export POSTGRES_IMAGE=$IMAGE:postgres
+    - export REDIS_IMAGE=$IMAGE:redis
+    - export NESTJS_IMAGE=$IMAGE:nestjs
+    - export NGINX_IMAGE=$IMAGE:nginx
+    - chmod +x ./deploy.sh
+    - scp -r ./.env ./prisma ./nginx ./docker-compose.yml ./Dockerfile $SSH_USER@$SSH_SERVER:~/app
+    - bash ./scripts/deploy.sh

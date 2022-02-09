@@ -28,7 +28,7 @@ import { ResetPasswordModule } from './useCases/resetPassword/resetPassword.modu
 import { RefreshAccessTokenModule } from './useCases/refreshAccessToken/refreshAccessToken.module';
 
 //Oauth
-import { CheckGithubUserModule } from './useCases/checkGithubUser/checkGitHubUser.module';
+import { CheckGithubUserModule } from './useCases/checkGithubUser/checkGithubUser.module';
 import { RegisterGithubModule } from './useCases/registerGithub/registerGithub.module';
 // import { LoginGithubModule } from './useCases/loginGithub/loginGithub.module';
 

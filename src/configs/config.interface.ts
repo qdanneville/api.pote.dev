@@ -32,7 +32,6 @@ export interface SecurityConfig {
     refreshIn: number;
     jwtSecret: string;
     refreshSecret: string;
-    bcryptSaltOrRound: string | number;
     verifyEmailTokenExpiresIn: string;
     forgotPasswordTokenExpiresIn: string;
 }

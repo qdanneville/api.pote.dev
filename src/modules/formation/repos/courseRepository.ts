@@ -1,7 +1,7 @@
 import { Course } from '../domain/course'
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma/prisma.service'
-import { CourseMap } from '../mappers/CourseMap';
+import { CourseMap } from '../mappers/courseMap';
 
 @Injectable()
 export class CourseRepository {

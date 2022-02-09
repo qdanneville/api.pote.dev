@@ -1,6 +1,6 @@
 import { BadGatewayException, BadRequestException } from "@nestjs/common";
 import { ValueObject } from "../../../core/domain/ValueObject";
-import * as bcrypt from 'bcrypt';
+import argon2 from 'argon2'
 
 interface UserPasswordProps {
     value: string;
@@ -30,14 +30,14 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
         let hashed: string;
         if (this.isAlreadyHashed()) {
             hashed = this.props.value;
-            return await this.bcryptCompare(plainTextPassword, hashed);
+            return await this.argon2Compare(plainTextPassword, hashed);
         } else {
             return this.props.value === plainTextPassword;
         }
     }
 
-    private async bcryptCompare(plainText: string, hashed: string): Promise<boolean> {
-        return await bcrypt.compare(plainText, hashed);
+    private async argon2Compare(plainText: string, hashed: string): Promise<boolean> {
+        return await argon2.verify(hashed, plainText);
     }
 
     public isAlreadyHashed(): boolean {
@@ -45,7 +45,7 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
     }
 
     private async hashPassword(password: string): Promise<string> {
-        return await bcrypt.hash(password, 10);
+        return await argon2.hash(password);
     }
 
     public getHashedValue(): Promise<string> {

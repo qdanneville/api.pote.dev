@@ -1,8 +1,8 @@
-import { Chapter } from '../domain/Chapter';
+import { Chapter } from '../domain/chapter';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Slug } from '../domain/slug';
 import {Course} from '../domain/course'
-import { CourseMap } from './CourseMap';
+import { CourseMap } from './courseMap';
 
 export class ChapterMap {
     public static async toPersistence(chapter: Chapter): Promise<any> {

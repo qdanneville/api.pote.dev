@@ -7,7 +7,7 @@ import {
     Response,
 } from '@nestjs/common';
 import { RegisterGithubService } from './registerGithub.service';
-import { RegisterGithubDTO } from './RegisterGithub.dto';
+import { RegisterGithubDTO } from './registerGithub.dto';
 
 @Controller('oauth/register/github')
 export class RegisterGithubController {

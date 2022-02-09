@@ -28,6 +28,9 @@ export class FormationRepository {
             where: {
                 slug: slug,
             },
+            include: {
+                difficulty: true
+            }
         });
 
         return formation ? FormationMap.toDomain(formation) : null;

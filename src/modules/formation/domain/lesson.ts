@@ -2,7 +2,7 @@ import { UniqueEntityID } from 'src/core/domain/UniqueEntityID';
 import { AggregateRoot } from 'src/core/domain/AggregateRoot';
 import { Slug } from './slug';
 import { LessonId } from './lessonId';
-import { Chapter } from './Chapter';
+import { Chapter } from './chapter';
 import { LessonCreated } from './events/lessonCreated';
 
 export interface LessonProps {

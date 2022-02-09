@@ -1,7 +1,7 @@
 import { AggregateRoot } from "../../../core/domain/AggregateRoot";
 import { UniqueEntityID } from "../../../core/domain/UniqueEntityID";
-import { ChapterCreated } from "./events/ChapterCreated";
-import { ChapterId } from "./ChapterId";
+import { ChapterCreated } from "./events/chapterCreated";
+import { ChapterId } from "./chapterId";
 import { Slug } from "./slug";
 import { Course } from "./course";
 

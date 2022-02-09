@@ -5,11 +5,15 @@ import { NotionContentModule } from './services/notionContent/notionContent.modu
 
 //UseCases
 import { GetPageModule } from './useCases/getPage/getPage.module'
+import { GetFormationsModule } from './useCases/getFormations/getFormations.module';
+import { GetFormationsBySlugModule } from './useCases/getFormationBySlug/getFormationBySlug.module';
 
 @Module({
     imports: [
         NotionContentModule,
         GetPageModule,
+        GetFormationsModule,
+        GetFormationsBySlugModule
     ]
 })
 

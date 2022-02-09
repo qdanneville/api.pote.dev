@@ -1,7 +1,7 @@
-import { Tag } from '../domain/Tag'
+import { Tag } from '../domain/tag'
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma/prisma.service'
-import { TagMap } from '../mappers/TagMap';
+import { TagMap } from '../mappers/tagMap';
 
 @Injectable()
 export class TagRepository {

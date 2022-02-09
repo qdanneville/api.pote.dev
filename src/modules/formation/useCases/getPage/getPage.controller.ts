@@ -6,7 +6,7 @@ import { GetPageService } from './getPage.service';
 export class GetPageController {
     constructor(private readonly getPageService: GetPageService) { }
 
-    @Get('/:page')
+    @Get('/:pagelol')
     async function(@Param() params: GetPageDTO) {
         return this.getPageService.find(params)
     }

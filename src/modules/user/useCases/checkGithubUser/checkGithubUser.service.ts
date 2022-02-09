@@ -1,10 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
 import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
-import axios from 'axios'
-
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto'
 
 import { UserEmail } from '../../domain/userEmail';
 import { ConfigService } from '@nestjs/config';

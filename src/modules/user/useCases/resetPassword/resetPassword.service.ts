@@ -1,6 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
-import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'src/modules/user/repos/user.repository';
 import { RedisAuthService } from '../../services/auth/redisAuth.service';
 import { UserPassword } from '../../domain/userPassword';

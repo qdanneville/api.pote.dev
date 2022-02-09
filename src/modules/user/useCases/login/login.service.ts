@@ -3,8 +3,6 @@ import { GetUserByEmailService } from '../../useCases/getUserByEmail/getUserByEm
 import { RedisHandlerService } from '../../services/auth/redis/redis-handler.service';
 import { JwtHandlerService } from '../../services/auth/jwt/jwt-handler.service';
 
-import * as bcrypt from 'bcrypt';
-
 import { UserEmail } from '../../domain/userEmail';
 import { UserPassword } from '../../domain/userPassword';
 import { LoginDTO } from './login.dto';

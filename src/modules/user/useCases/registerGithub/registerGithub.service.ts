@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { LoginGithubService } from '../loginGithub/loginGithub.service';
-import { RegisterGithubDTO } from './RegisterGithub.dto';
+import { RegisterGithubDTO } from './registerGithub.dto';
 import { githubProviderService } from '../../services/authProviders/githubProvider.service';
 import { User } from '../../domain/user';
 import { UserEmail } from '../../domain/userEmail';

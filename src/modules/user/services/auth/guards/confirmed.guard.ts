@@ -11,22 +11,22 @@ export class ConfirmedGuard implements CanActivate {
 
         const { user } = context.switchToHttp().getRequest();
 
-        let isConfirmed;
+        let isVerified;
 
         try {
-            isConfirmed = await this.redisHandlerService.getValue(
+            isVerified = await this.redisHandlerService.getValue(
                 user.userId,
-                'confirmed',
+                'isEmailVerified',
             );
         }
         catch (err) {
-            isConfirmed = false;
+            isVerified = false;
         }
 
-        if (isConfirmed === 'false') {
+        if (isVerified === 'false') {
             return false
         }
 
-        return user.confirmed
+        return isVerified
     }
 }

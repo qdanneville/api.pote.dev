@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { FormationRepository } from '../../repos/formationRepository';
 
 @Injectable()
-export class GetFormationsService {
+export class GetFormationsBySlugService {
     constructor(private readonly formationRepository: FormationRepository) { }
 
-    async findAll() {
-        return this.formationRepository.getFormations()
+    async find(params) {
+        console.log('params : ', params)
+        return this.formationRepository.getFormationBySlug(params.slug)
     }
 }

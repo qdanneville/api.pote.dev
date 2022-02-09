@@ -1,4 +1,4 @@
-import { Tag } from '../domain/Tag';
+import { Tag } from '../domain/tag';
 import { Slug } from '../domain/slug';
 
 export class TagMap {
