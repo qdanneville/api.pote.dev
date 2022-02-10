@@ -3,6 +3,7 @@ echo REDIS_IMAGE=$IMAGE:redis  >> .env
 echo NESTJS_IMAGE=$IMAGE:nestjs  >> .env
 echo NGINX_IMAGE=$IMAGE:nginx >> .env
 
+echo SERVER_NAME=$SERVER_NAME  >> .env
 echo APP_BASE_URL=$APP_BASE_URL  >> .env
 
 echo POSTGRES_USER=$POSTGRES_USER  >> .env
