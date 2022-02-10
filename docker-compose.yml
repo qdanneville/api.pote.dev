@@ -15,7 +15,7 @@ services:
       - postgres
       - redis
   postgres:
-    image: "${POSTGRES_IMAGE}"
+    image: registry.gitlab.com/pote.dev/api:postgres
     container_name: api-postgres
     restart: always
     ports:

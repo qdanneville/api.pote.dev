@@ -36,7 +36,7 @@ build:
     - docker pull $IMAGE:nestjs || true
     - docker pull $IMAGE:nginx || true
     - docker-compose build --no-cache
-    - docker push $IMAGE:postgres
+    - docker push registry.gitlab.com/pote.dev/api:postgres
     - docker push $IMAGE:redis
     - docker push $IMAGE:nestjs
     - docker push $IMAGE:nginx
