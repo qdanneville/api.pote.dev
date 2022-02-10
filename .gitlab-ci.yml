@@ -43,5 +43,5 @@ deploy:
     - export NESTJS_IMAGE=$IMAGE:nestjs
     - export NGINX_IMAGE=$IMAGE:nginx
     - chmod +x ./scripts/deploy.sh
-    - scp -r ./.env ./.eslintrc.js ./prettierrc ./* $SSH_USER@$SSH_SERVER:~/app/api
+    - scp -r ./.env ./.eslintrc.js ./.prettierrc ./* $SSH_USER@$SSH_SERVER:~/app/api
     - bash ./scripts/deploy.sh
