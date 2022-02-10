@@ -27,17 +27,11 @@ before_script:
 build:
   stage: build
   script:
-    - export POSTGRES_IMAGE=$IMAGE:postgres
-    - export REDIS_IMAGE=$IMAGE:redis
     - export NESTJS_IMAGE=$IMAGE:nestjs
     - export NGINX_IMAGE=$IMAGE:nginx
-    - docker pull $IMAGE:postgres || true
-    - docker pull $IMAGE:redis || true
     - docker pull $IMAGE:nestjs || true
     - docker pull $IMAGE:nginx || true
     - docker-compose build --no-cache
-    - docker push registry.gitlab.com/pote.dev/api:postgres
-    - docker push $IMAGE:redis
     - docker push $IMAGE:nestjs
     - docker push $IMAGE:nginx
 
@@ -49,5 +43,5 @@ deploy:
     - export NESTJS_IMAGE=$IMAGE:nestjs
     - export NGINX_IMAGE=$IMAGE:nginx
     - chmod +x ./deploy.sh
-    - scp -r ./.env ./prisma ./nginx ./docker-compose.yml ./Dockerfile $SSH_USER@$SSH_SERVER:~/app
+    - scp -r ./.env ./.eslintrc.js ./prettierrc ./* $SSH_USER@$SSH_SERVER:~/app/api
     - bash ./scripts/deploy.sh
