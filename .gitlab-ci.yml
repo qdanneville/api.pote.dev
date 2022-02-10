@@ -42,6 +42,6 @@ deploy:
     - export REDIS_IMAGE=$IMAGE:redis
     - export NESTJS_IMAGE=$IMAGE:nestjs
     - export NGINX_IMAGE=$IMAGE:nginx
-    - chmod +x ./deploy.sh
+    - chmod +x ./scripts/deploy.sh
     - scp -r ./.env ./.eslintrc.js ./prettierrc ./* $SSH_USER@$SSH_SERVER:~/app/api
     - bash ./scripts/deploy.sh
