@@ -1,7 +1,5 @@
-load_module "modules/ngx_http_perl_module.so";
-
 upstream nestjs_upstream {
-  server nestjs:4000;
+  server nestjs:${PORT};
 }
 
 server {

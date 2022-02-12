@@ -1,5 +1,16 @@
 version: '3.7'
 services:
+  prisma-migrate:
+    image: "${PRISMA_MIGRATE_IMAGE}"
+    container_name: api-prisma-migrate
+    build:
+      context: ./prisma
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres
     container_name: api-postgres
@@ -13,4 +24,4 @@ services:
 
 volumes:
   postgres:
-    name: potedev-db
+    name: potedev-dev-db

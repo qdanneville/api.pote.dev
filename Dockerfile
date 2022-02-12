@@ -31,7 +31,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
 RUN npx prisma generate
-RUN npx prisma migrate dev
 
 EXPOSE 4000
 
