@@ -39,7 +39,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - 80:80
+      - 4000:4000
     environment:
       - SERVER_NAME=${SERVER_NAME}
     command: >

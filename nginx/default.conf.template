@@ -5,7 +5,6 @@ upstream nestjs_upstream {
 }
 
 server {
-    listen 80;
     server_name ${SERVER_NAME};
 
     location / {
