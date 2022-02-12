@@ -11,8 +11,5 @@ RUN rm /etc/nginx/conf.d/*
 # *.conf files in conf.d/ dir get included in main config
 COPY ./default.conf.template /etc/nginx/conf.d/
 
-# Expose the listening port
-EXPOSE 4000
-
 # Launch NGINX
 CMD [ "nginx", "-g", "daemon off;" ]
