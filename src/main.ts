@@ -51,7 +51,7 @@ async function bootstrap() {
   //Logger
   app.use(morgan('combined'))
 
-  await app.listen(process.env.PORT || nestConfig.port || 3000);
+  await app.listen(process.env.PORT || nestConfig.port || 4000);
   console.log(`Nest APP is running on port : ${process.env.PORT}`)
 }
 bootstrap();
