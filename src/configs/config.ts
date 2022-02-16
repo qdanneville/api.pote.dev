@@ -6,7 +6,7 @@ const config: Config = {
     },
     cors: {
         enabled: true,
-        origin: ['http://localhost:1234', "https://www.notion.so/", "http://localhost:3001"],
+        origin: [process.env.APP_BASE_URL, "https://www.notion.so/"],
         credentials: true
     },
     swagger: {
