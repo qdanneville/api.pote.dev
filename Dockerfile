@@ -32,8 +32,10 @@ COPY --from=builder /app/prisma ./prisma
 
 RUN npx prisma generate
 
-EXPOSE 4000
+ARG APP_PORT
 
-ENV PORT 4000
+EXPOSE APP_PORT
+
+ENV PORT APP_PORT
 
 CMD ["node", "dist/main"]

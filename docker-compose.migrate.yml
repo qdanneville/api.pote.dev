@@ -25,3 +25,8 @@ services:
 volumes:
   postgres:
     name: potedev-dev-db
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

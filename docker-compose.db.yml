@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   postgres:
     image: postgres
@@ -13,4 +13,9 @@ services:
 
 volumes:
   postgres:
-    name: potedev-db
+    name: potedev-dev-db
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

@@ -8,22 +8,18 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 4000:4000
+      - ${APP_PORT}:${APP_PORT}
     env_file:
       - .env
+    environment:
+      - VIRTUAL_HOST=${HOST}
+      - VIRTUAL_NETWORK=${VIRTUAL_NETWORK}
+      - VIRTUAL_PORT=${APP_PORT}
+      - APP_PORT=${APP_PORT}
+      - LETSENCRYPT_HOST=${HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     depends_on:
-#      - postgres
       - redis
-#  postgres:
-#    image: postgres
-#    container_name: api-postgres
-#    restart: always
-#    ports:
-#      - 5432:5432
-#    env_file:
-#      - .env
-#    volumes:
-#      - postgres:/var/lib/postgresql/data
   redis:
     image: redis
     container_name: api-redis
@@ -32,24 +28,7 @@ services:
       - 6379:6379
     env_file:
       - .env
-  nginx:
-    image: "${NGINX_IMAGE}"
-    container_name: api-nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    environment:
-      - SERVER_NAME=${SERVER_NAME}
-      - PORT=${PORT}
-    command: >
-            /bin/sh -c
-            "envsubst '
-            $${SERVER_NAME}
-            $${PORT}
-            '< /etc/nginx/conf.d/default.conf.template
-            > /etc/nginx/conf.d/nginx.conf
-            && nginx -g 'daemon off;'"
-    depends_on:
-#     - postgres
-      - redis
-      - nestjs
+networks:
+  default:
+    external:
+      name: nginx-proxy
