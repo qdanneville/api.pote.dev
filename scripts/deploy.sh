@@ -2,6 +2,7 @@
 
 ssh $SSH_USER@$SSH_SERVER << EOF
     cd ~/app/api
+    pwd
     ls -la
     echo "printing username"
     echo $USERNAME
