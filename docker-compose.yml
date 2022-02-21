@@ -7,16 +7,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+      - APP_PORT=${APP_PORT}
     ports:
       - ${APP_PORT}:${APP_PORT}
     env_file:
       - .env
     environment:
-      - VIRTUAL_HOST=${HOST}
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
       - VIRTUAL_NETWORK=${VIRTUAL_NETWORK}
       - VIRTUAL_PORT=${APP_PORT}
       - APP_PORT=${APP_PORT}
-      - LETSENCRYPT_HOST=${HOST}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     depends_on:
       - redis
@@ -31,4 +33,4 @@ services:
 networks:
   default:
     external:
-      name: nginx-proxy
+      name: ${VIRTUAL_NETWORK}

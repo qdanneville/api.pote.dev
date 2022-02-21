@@ -6,6 +6,7 @@ services:
 
 stages:
   - build
+  - migrate
   - deploy
 
 before_script:
@@ -23,25 +24,43 @@ before_script:
   - docker login registry.gitlab.com -u $USERNAME -p $TOKEN
   - bash ./scripts/setup_env.sh
 
+migrate:
+  stage: build
+  script:
+    - docker pull $IMAGE:migrate || true
+    - docker pull $IMAGE:studio || true
+    - docker pull $IMAGE:nestjs || true
+    - docker pull $IMAGE:nginx || true
+    - docker-compose build --no-cache
+    - docker push $IMAGE:migrate
+    - docker push $IMAGE:studio
+    - docker push $IMAGE:nestjs
+    - docker push $IMAGE:nginx
 
 build:
   stage: build
   script:
+    - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
+    - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
     - export NESTJS_IMAGE=$IMAGE:nestjs
     - export NGINX_IMAGE=$IMAGE:nginx
+    - docker pull $IMAGE:migrate || true
+    - docker pull $IMAGE:studio || true
     - docker pull $IMAGE:nestjs || true
     - docker pull $IMAGE:nginx || true
     - docker-compose build --no-cache
+    - docker push $IMAGE:migrate
+    - docker push $IMAGE:studio
     - docker push $IMAGE:nestjs
     - docker push $IMAGE:nginx
 
 deploy:
   stage: deploy
   script:
-    - export POSTGRES_IMAGE=$IMAGE:postgres
-    - export REDIS_IMAGE=$IMAGE:redis
+    - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
+    - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
     - export NESTJS_IMAGE=$IMAGE:nestjs
     - export NGINX_IMAGE=$IMAGE:nginx
     - chmod +x ./scripts/deploy.sh
-    - scp -r ./.env ./.eslintrc.js ./.prettierrc ./* $SSH_USER@$SSH_SERVER:~/app/api
+    - scp -r ./.env ./.eslintrc.js ./.prettierrc ./.dockerignore ./* $SSH_USER@$SSH_SERVER:~/app/api
     - bash ./scripts/deploy.sh

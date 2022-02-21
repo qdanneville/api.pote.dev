@@ -18,4 +18,4 @@ volumes:
 networks:
   default:
     external:
-      name: nginx-proxy
+      name: ${VIRTUAL_NETWORK}

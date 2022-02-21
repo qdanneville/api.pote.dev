@@ -1,13 +1,20 @@
 version: '3.7'
 services:
-  prisma-migrate:
-    image: "${PRISMA_MIGRATE_IMAGE}"
-    container_name: api-prisma-migrate
+  prisma-studio:
+    image: "${PRISMA_STUDIO_IMAGE}"
+    container_name: api-prisma-studio
     build:
       context: ./prisma
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.studio
     env_file:
       - .env
+    environment:
+      - VIRTUAL_HOST=${STUDIO_HOST}
+      - VIRTUAL_NETWORK=${VIRTUAL_NETWORK}
+      - VIRTUAL_PORT=${STUDIO_PORT}
+      - STUDIO_PORT=${STUDIO_PORT}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_STUDIO_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     depends_on:
       - postgres
 

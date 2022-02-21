@@ -1,0 +1,16 @@
+FROM node:16-alpine
+
+RUN apk add --no-cache git
+
+RUN echo $DATABASE_URL
+
+WORKDIR /app
+
+COPY . ./prisma/
+
+RUN npx prisma generate
+
+ARG STUDIO_PORT=5555
+EXPOSE ${STUDIO_PORT}
+
+CMD npx prisma studio --port ${STUDIO_PORT}

@@ -30,7 +30,7 @@ services:
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      - NGINX_PROXY_CONTAINER=nginx-proxy
+      - NGINX_PROXY_CONTAINER=${VIRTUAL_NETWORK}
     restart: always
 
 volumes:
@@ -44,4 +44,4 @@ volumes:
 networks:
   default:
     external:
-      name: nginx-proxy
+      name: ${VIRTUAL_NETWORK}

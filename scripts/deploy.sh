@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ssh $SSH_USER@$SSH_SERVER << 'ENDSSH'
+ssh $SSH_USER@$SSH_SERVER "
     cd ~/app/api
     ls -la
     echo "printing username"
@@ -9,10 +9,16 @@ ssh $SSH_USER@$SSH_SERVER << 'ENDSSH'
     echo $TOKEN
     echo "docker login"
     docker login registry.gitlab.com -u $USERNAME -p $TOKEN
+    echo "pulling migrate image"
+    echo $IMAGE:migrate
+    docker pull $IMAGE:migrate
+    echo "pulling studio image"
+    echo $IMAGE:studio
+    docker pull $IMAGE:studio
     echo "pulling nestjs image"
+    echo $IMAGE:nestjs
     docker pull $IMAGE:nestjs
     echo "pulling nginx image"
-    echo "docker login"
+    echo $IMAGE:nginx
     docker pull $IMAGE:nginx
-    docker-compose -f docker-compose.yml up -d --build
-ENDSSH
+    docker-compose -f docker-compose.yml up -d --build"
