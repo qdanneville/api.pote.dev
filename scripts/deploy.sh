@@ -12,6 +12,7 @@ ssh $SSH_USER@$SSH_SERVER << EOF
     docker pull $IMAGE:studio
     docker-compose -f docker-compose.yml down --remove-orphans
     docker pull $IMAGE:nestjs
+    docker-compose -f docker-compose.nginx up -d
     docker-compose -f docker-compose.migrate.yml up -d
     docker-compose -f docker-compose.studio.yml up -d
     docker-compose -f docker-compose.yml up -d
