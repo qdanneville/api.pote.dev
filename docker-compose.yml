@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nestjs:
-    image: "${NESTJS_IMAGE}"
+    image: ${NESTJS_IMAGE}
     container_name: api-nestjs
     build:
       context: .

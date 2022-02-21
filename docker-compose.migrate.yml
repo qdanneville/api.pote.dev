@@ -1,7 +1,7 @@
-version: '3.7'
+version: '3.8'
 services:
   prisma-migrate:
-    image: "${PRISMA_MIGRATE_IMAGE}"
+    image: ${PRISMA_MIGRATE_IMAGE}
     container_name: api-prisma-migrate
     build:
       context: ./prisma
