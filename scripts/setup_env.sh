@@ -34,6 +34,7 @@ echo DB_SCHEMA=$DB_SCHEMA  >> .env
 echo DATABASE_URL=$DATABASE_URL  >> .env
 
 echo PORT=$PORT  >> .env
+echo APP_PORT=$PORT  >> .env
 
 echo JWT_SECRET=$JWT_SECRET  >> .env
 echo JWT_EXPIRE_IN=$JWT_EXPIRE_IN  >> .env
