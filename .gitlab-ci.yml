@@ -23,21 +23,21 @@ before_script:
   - docker login registry.gitlab.com -u $USERNAME -p $TOKEN
   - bash ./scripts/setup_env.sh
 
-#build:
-#  stage: build
-#  script:
-#    - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
-#    - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
-#    - export NESTJS_IMAGE=$IMAGE:nestjs
-#    - docker pull $IMAGE:migrate || true
-#    - docker pull $IMAGE:studio || true
-#    - docker pull $IMAGE:nestjs || true
-#    - docker-compose -f docker-compose.migrate.yml build --no-cache
-#    - docker-compose -f docker-compose.studio.yml build --no-cache
-#    - docker-compose -f docker-compose.yml build --no-cache
-#    - docker push $IMAGE:migrate
-#    - docker push $IMAGE:studio
-#    - docker push $IMAGE:nestjs
+build:
+  stage: build
+  script:
+    - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
+    - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
+    - export NESTJS_IMAGE=$IMAGE:nestjs
+    - docker pull $IMAGE:migrate || true
+    - docker pull $IMAGE:studio || true
+    - docker pull $IMAGE:nestjs || true
+    - docker-compose -f docker-compose.migrate.yml build --no-cache
+    - docker-compose -f docker-compose.studio.yml build --no-cache
+    - docker-compose -f docker-compose.yml build --no-cache
+    - docker push $IMAGE:migrate
+    - docker push $IMAGE:studio
+    - docker push $IMAGE:nestjs
 
 deploy:
   stage: deploy
