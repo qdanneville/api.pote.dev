@@ -6,7 +6,6 @@ services:
 
 stages:
   - build
-  - migrate
   - deploy
 
 before_script:
@@ -24,19 +23,6 @@ before_script:
   - docker login registry.gitlab.com -u $USERNAME -p $TOKEN
   - bash ./scripts/setup_env.sh
 
-migrate:
-  stage: build
-  script:
-    - docker pull $IMAGE:migrate || true
-    - docker pull $IMAGE:studio || true
-    - docker pull $IMAGE:nestjs || true
-    - docker pull $IMAGE:nginx || true
-    - docker-compose build --no-cache
-    - docker push $IMAGE:migrate
-    - docker push $IMAGE:studio
-    - docker push $IMAGE:nestjs
-    - docker push $IMAGE:nginx
-
 build:
   stage: build
   script:
@@ -48,7 +34,9 @@ build:
     - docker pull $IMAGE:studio || true
     - docker pull $IMAGE:nestjs || true
     - docker pull $IMAGE:nginx || true
-    - docker-compose build --no-cache
+    - docker-compose -f docker-compose.migrate.yml build --no-cache
+    - docker-compose -f docker-compose.studio.yml build --no-cache
+    - docker-compose -f docker-compose.yml build --no-cache
     - docker push $IMAGE:migrate
     - docker push $IMAGE:studio
     - docker push $IMAGE:nestjs
