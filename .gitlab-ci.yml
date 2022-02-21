@@ -29,18 +29,15 @@ build:
     - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
     - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
     - export NESTJS_IMAGE=$IMAGE:nestjs
-    - export NGINX_IMAGE=$IMAGE:nginx
     - docker pull $IMAGE:migrate || true
     - docker pull $IMAGE:studio || true
     - docker pull $IMAGE:nestjs || true
-    - docker pull $IMAGE:nginx || true
     - docker-compose -f docker-compose.migrate.yml build --no-cache
     - docker-compose -f docker-compose.studio.yml build --no-cache
     - docker-compose -f docker-compose.yml build --no-cache
     - docker push $IMAGE:migrate
     - docker push $IMAGE:studio
     - docker push $IMAGE:nestjs
-    - docker push $IMAGE:nginx
 
 deploy:
   stage: deploy
@@ -48,7 +45,6 @@ deploy:
     - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
     - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
     - export NESTJS_IMAGE=$IMAGE:nestjs
-    - export NGINX_IMAGE=$IMAGE:nginx
     - chmod +x ./scripts/deploy.sh
     - scp -r ./.env ./.eslintrc.js ./.prettierrc ./.dockerignore ./* $SSH_USER@$SSH_SERVER:~/app/api
     - bash ./scripts/deploy.sh

@@ -18,7 +18,4 @@ ssh $SSH_USER@$SSH_SERVER "
     echo "pulling nestjs image"
     echo $IMAGE:nestjs
     docker pull $IMAGE:nestjs
-    echo "pulling nginx image"
-    echo $IMAGE:nginx
-    docker pull $IMAGE:nginx
     docker-compose -f docker-compose.yml up -d --build"
