@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ssh $SSH_USER@$SSH_SERVER "
+ssh $SSH_USER@$SSH_SERVER << EOF
     cd ~/app/api
     ls -la
     echo "printing username"
@@ -18,4 +18,5 @@ ssh $SSH_USER@$SSH_SERVER "
     echo "pulling nestjs image"
     echo $IMAGE:nestjs
     docker pull $IMAGE:nestjs
-    docker-compose -f docker-compose.yml up -d --build"
+    docker-compose -f docker-compose.yml up -d --build
+EOF
