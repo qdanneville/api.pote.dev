@@ -4,6 +4,10 @@ image:
 services:
   - docker:dind
 
+variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+
 stages:
   - build
   - deploy
