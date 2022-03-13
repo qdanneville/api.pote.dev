@@ -12,7 +12,7 @@ export interface LessonProps {
     imageUrl?: string
     duration?: number
     order?: number
-    chapter: Chapter
+    chapter?: Chapter
 }
 
 export class Lesson extends AggregateRoot<LessonProps> {

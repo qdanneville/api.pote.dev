@@ -13,7 +13,7 @@ export class TagMap {
         }
     }
 
-    public static async toDomain(raw: any): Promise<Tag> {
+    public static toDomain(raw: any): Tag {
         const slug = Slug.create({value:raw.slug})
 
         const tagDomain = Tag.create({
@@ -28,11 +28,11 @@ export class TagMap {
     }
 
     //TODO DTO Tag response
-    public static toResponse(Tag: Tag): any {
+    public static toResponse(tag: Tag): any {
         const tagResponse = {
-            slug: Tag.slug,
-            name: Tag.name,
-            icon:Tag.imageUrl
+            slug: tag.slug.value,
+            name: tag.name,
+            icon:tag.imageUrl
         }
 
         return tagResponse

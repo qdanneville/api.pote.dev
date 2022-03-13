@@ -7,9 +7,44 @@ import { FormationMap } from '../mappers/formationMap';
 export class FormationRepository {
     constructor(private readonly entities: PrismaService) { }
 
-    getFormations() {
+    async getFormations({ difficulty, technology }) {
         const FormationModel = this.entities.formation
-        return FormationModel.findMany();
+
+        const formations = await FormationModel.findMany({
+            where: {
+                AND: [
+                    {
+                        difficulty: {
+                            name: {
+                                equals: difficulty
+                            }
+                        }
+                    },
+                    {
+                        technologies: {
+                            some: {
+                                name: {
+                                    equals: technology
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            include: {
+                difficulty: true,
+                technologies: true,
+                courses: {
+                    include: {
+                        difficulty: true,
+                        tags: true,
+                        technologies: true
+                    }
+                }
+            }
+        })
+
+        return formations.map(formation => FormationMap.toDomain(formation))
     }
 
     async exists(title: string) {
@@ -29,7 +64,20 @@ export class FormationRepository {
                 slug: slug,
             },
             include: {
-                difficulty: true
+                difficulty: true,
+                technologies: true,
+                courses: {
+                    include: {
+                        difficulty: true,
+                        tags: true,
+                        technologies: true,
+                        chapters: {
+                            include : {
+                                lessons:true
+                            }
+                        }
+                    }
+                }
             }
         });
 

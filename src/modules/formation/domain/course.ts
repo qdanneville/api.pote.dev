@@ -7,6 +7,7 @@ import { Prerequisite } from "./prerequisite";
 import { Difficulty } from "./difficulty";
 import { Tag } from "./tag";
 import { Technology } from "./technology";
+import { Chapter } from "./chapter";
 
 export interface CourseProps {
     title: string
@@ -19,7 +20,8 @@ export interface CourseProps {
     difficulty: Difficulty
     isPublished: boolean
     duration?: number
-    order?: number
+    order?: number,
+    chapters?: Chapter[]
 }
 
 export class Course extends AggregateRoot<CourseProps> {
@@ -77,6 +79,10 @@ export class Course extends AggregateRoot<CourseProps> {
 
     get prerequisites(): Prerequisite[] {
         return this.props.prerequisites
+    }
+
+    get chapters(): Chapter[] {
+        return this.props.chapters
     }
 
     private constructor(props: CourseProps, id?: UniqueEntityID) {

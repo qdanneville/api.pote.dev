@@ -10,7 +10,7 @@ import { DifficultyRepository } from '../../repos/difficultyRepository';
 import { FormationRepository } from '../../repos/formationRepository';
 import { TagRepository } from '../../repos/tagRepository';
 import { PrerequisiteRepository } from '../../repos/prerequisiteRepository';
-import { technologyRepository } from '../../repos/technologyRepository';
+import { TechnologyRepository } from '../../repos/technologyRepository';
 import { NotionProviderService } from '../notionProvider/notionProvider.service';
 import { CourseRepository } from '../../repos/courseRepository';
 import { Chapter, ChapterProps } from '../../domain/chapter';
@@ -45,7 +45,7 @@ export class NotionContentService implements NotionContent {
         private chapterRepository: ChapterRepository,
         private lessonRepository: LessonRepository,
         private tagRepository: TagRepository,
-        private technologyRepository: technologyRepository,
+        private technologyRepository: TechnologyRepository,
         private difficultyRepository: DifficultyRepository,
         private prerequisiteRepository: PrerequisiteRepository,
     ) {

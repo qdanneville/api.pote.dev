@@ -4,12 +4,14 @@ import { PrismaService } from '../../../database/prisma/prisma.service'
 import { TechnologyMap } from '../mappers/technologyMap';
 
 @Injectable()
-export class technologyRepository {
+export class TechnologyRepository {
     constructor(private readonly entities: PrismaService) { }
 
-    getTechnologies() {
+    async getTechnologies() {
         const TechnologyModel = this.entities.technology
-        return TechnologyModel.findMany();
+        const entities = await TechnologyModel.findMany();
+
+        return entities.map(entity => TechnologyMap.toDomain(entity))
     }
 
     async exists(name: string) {

@@ -7,9 +7,70 @@ import { CourseMap } from '../mappers/courseMap';
 export class CourseRepository {
     constructor(private readonly entities: PrismaService) { }
 
-    getCourses() {
+    async getCourses({ difficulty, technology, tags }) {
         const CourseModel = this.entities.course
-        return CourseModel.findMany();
+
+        const coursesFilter = {
+            where: {
+                AND: [
+                    {
+                        difficulty: {
+                            name: {
+                                equals: difficulty
+                            }
+                        }
+                    },
+                    {
+                        technologies: {
+                            some: {
+                                name: {
+                                    equals: technology
+                                }
+                            }
+                        }
+                    },
+                ]
+            },
+            include: {
+                difficulty: true,
+                technologies: true,
+                tags: true,
+                prerequisites:true,
+                chapters: {
+                    include : {
+                        lessons:true
+                    }
+                }
+            }
+        }
+
+        //Tags could either be a single string tag like = "exercice"
+        //OR a string array like ["exercice", "fondamentaux"]
+        //This might be revamped ?
+
+        if (tags) {
+            typeof tags === 'string'
+                ? coursesFilter.where.AND.push({
+                    tags: {
+                        some: {
+                            name: tags,
+                        },
+                    },
+                } as any)
+                : tags.forEach(tag => {
+                    coursesFilter.where.AND.push({
+                        tags: {
+                            some: {
+                                name: tag,
+                            },
+                        },
+                    } as any)
+                })
+        }
+
+        const courses = await CourseModel.findMany(coursesFilter)
+
+        return courses.map(formation => CourseMap.toDomain(formation))
     }
 
     async exists(title: string) {
@@ -28,6 +89,16 @@ export class CourseRepository {
             where: {
                 slug: slug,
             },
+            include: {
+                difficulty: true,
+                technologies: true,
+                tags: true,
+                chapters: {
+                    include: {
+                        lessons: true
+                    }
+                }
+            }
         });
 
         return course ? CourseMap.toDomain(course) : null;

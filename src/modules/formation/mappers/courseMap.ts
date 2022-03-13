@@ -9,6 +9,8 @@ import { TagMap } from './tagMap';
 import { PrerequisiteMap } from './prerequisiteMap';
 import { TechnologyMap } from './technologyMap';
 import { DifficultyMap } from './difficultyMap';
+import { Chapter } from '../domain/chapter';
+import { ChapterMap } from './chapterMap';
 
 export class CourseMap {
     public static async toPersistence(course: Course): Promise<any> {
@@ -29,12 +31,13 @@ export class CourseMap {
         return data
     }
 
-    public static async toDomain(raw: any): Promise<Course> {
+    public static toDomain(raw: any): Course {
         const slug = Slug.create({ value: raw.slug })
-        const difficulty: Difficulty = await DifficultyMap.toDomain(raw.difficulty)
+        const difficulty: Difficulty = DifficultyMap.toDomain(raw.difficulty)
         const technologies: Technology[] = raw.technologies?.map(technology => TechnologyMap.toDomain(technology))
         const tags: Tag[] = raw.tags?.map(tag => TagMap.toDomain(tag))
         const prerequisites: Prerequisite[] = raw.prerequisites?.map(prerequisite => PrerequisiteMap.toDomain(prerequisite))
+        const chapters: Chapter[] = raw.chapters?.map(chapter => ChapterMap.toDomain(chapter))
 
         const courseDomain = Course.create({
             slug,
@@ -45,7 +48,8 @@ export class CourseMap {
             difficulty,
             tags,
             technologies,
-            prerequisites
+            prerequisites,
+            chapters
         }, new UniqueEntityID(raw.id));
 
         return courseDomain ? courseDomain : null;
@@ -54,9 +58,14 @@ export class CourseMap {
     //TODO DTO Course response
     public static toResponse(course: Course): any {
         const courseResponse = {
-            slug: course.slug,
+            slug: course.slug.value,
             title: course.title,
-            imageUrl: course.imageUrl
+            imageUrl: course.imageUrl,
+            difficulty: course.difficulty.name,
+            technologies: course.technologies?.map(technology => technology.name),
+            prerequisites: course.prerequisites?.map(prerequisite => prerequisite.name),
+            tags: course.tags?.map(tag => TagMap.toResponse(tag)),
+            chapters:course.chapters?.map(chapter => (ChapterMap.toResponse(chapter))),
         }
 
         return courseResponse

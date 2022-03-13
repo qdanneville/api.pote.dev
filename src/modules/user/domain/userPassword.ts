@@ -45,7 +45,6 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
     }
 
     private async hashPassword(password: string): Promise<string> {
-        console.log('argon 2 : ', argon2)
         return await argon2.hash(password);
     }
 

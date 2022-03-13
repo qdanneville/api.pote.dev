@@ -1,12 +1,12 @@
-import { Controller, Get, Request } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { GetFormationsService } from './getFormations.service';
 
 @Controller('formations')
 export class GetFormationsController {
     constructor(private readonly getFormationsService: GetFormationsService) { }
 
-    @Get('')
-    async getFormations(@Request() req) {
-        return this.getFormationsService.findAll()
+    @Get()
+    async getFormations(@Query() query) {
+        return this.getFormationsService.findAll(query)
     }
 }

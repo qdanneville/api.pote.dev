@@ -19,16 +19,15 @@ export class LessonMap {
         return data
     }
 
-    public static async toDomain(raw: any): Promise<Lesson> {
+    public static toDomain(raw: any): Lesson {
+        console.log('lesson raw', raw);
         const slug = Slug.create({ value: raw.slug })
-        const chapter:Chapter = await ChapterMap.toDomain(raw.chapter)
 
         const lessonDomain = Lesson.create({
             slug,
             notionPageId: raw.notionPageId,
             title: raw.title,
             imageUrl: raw.imageUrl,
-            chapter,
         }, new UniqueEntityID(raw.id));
 
         return lessonDomain ? lessonDomain : null;
@@ -37,7 +36,7 @@ export class LessonMap {
     //TODO DTO Lesson response
     public static toResponse(Lesson: Lesson): any {
         const lessonResponse = {
-            slug: Lesson.slug,
+            slug: Lesson.slug.value,
             title: Lesson.title,
             imageUrl: Lesson.imageUrl
         }

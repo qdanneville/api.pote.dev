@@ -7,9 +7,11 @@ import { DifficultyMap } from '../mappers/difficultyMap';
 export class DifficultyRepository {
     constructor(private readonly entities: PrismaService) { }
 
-    getTechnologies() {
+    async getDifficulties() {
         const DifficultyModel = this.entities.difficulty
-        return DifficultyModel.findMany();
+        const entities = await DifficultyModel.findMany();
+
+        return entities.map(entity => DifficultyMap.toDomain(entity))
     }
 
     async exists(name: string) {

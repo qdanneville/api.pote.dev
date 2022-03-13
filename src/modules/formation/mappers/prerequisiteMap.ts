@@ -12,7 +12,7 @@ export class PrerequisiteMap {
         }
     }
 
-    public static async toDomain(raw: any): Promise<Prerequisite> {
+    public static toDomain(raw: any): Prerequisite {
         const prerequisiteDomain = Prerequisite.create({
             prerequisiteId:raw.id,
             notionPageId: raw.notionPageId,

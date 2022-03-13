@@ -13,7 +13,7 @@ export class DifficultyMap {
         }
     }
 
-    public static async toDomain(raw: any): Promise<Difficulty> {
+    public static toDomain(raw: any): Difficulty {
         const slug = Slug.create({value:raw.slug})
 
         const difficultyDomain = Difficulty.create({
@@ -30,7 +30,7 @@ export class DifficultyMap {
     //TODO DTO difficulty response
     public static toResponse(difficulty: Difficulty): any {
         const difficultyResponse = {
-            slug: difficulty.slug,
+            slug: difficulty.slug.value,
             name: difficulty.name,
             icon: difficulty.imageUrl
         }

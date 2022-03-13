@@ -7,9 +7,11 @@ import { TagMap } from '../mappers/tagMap';
 export class TagRepository {
     constructor(private readonly entities: PrismaService) { }
 
-    getTags() {
+    async getTags() {
         const TagModel = this.entities.tag
-        return TagModel.findMany();
+        const entities = await TagModel.findMany();
+
+        return entities.map(entity => TagMap.toDomain(entity))
     }
 
     async exists(name: string) {

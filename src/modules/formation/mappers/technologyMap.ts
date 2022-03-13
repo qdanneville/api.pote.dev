@@ -13,7 +13,7 @@ export class TechnologyMap {
         }
     }
 
-    public static async toDomain(raw: any): Promise<Technology> {
+    public static toDomain(raw: any): Technology {
         const slug = Slug.create({value:raw.slug})
 
         const technologyDomain = Technology.create({
@@ -30,7 +30,7 @@ export class TechnologyMap {
     //TODO DTO technology response
     public static toResponse(technology: Technology): any {
         const technologyResponse = {
-            slug: technology.slug,
+            slug: technology.slug.value,
             name: technology.name,
             icon:technology.imageUrl
         }

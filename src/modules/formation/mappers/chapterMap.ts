@@ -3,6 +3,8 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Slug } from '../domain/slug';
 import {Course} from '../domain/course'
 import { CourseMap } from './courseMap';
+import { Lesson } from '../domain/lesson';
+import {LessonMap} from './lessonMap'
 
 export class ChapterMap {
     public static async toPersistence(chapter: Chapter): Promise<any> {
@@ -13,24 +15,21 @@ export class ChapterMap {
             notionPageId: chapter.notionPageId,
             title: chapter.title,
             courseId: chapter.course ? chapter.courseId : null,
-            // chapterStep: chapter.chapterStep ? chapter.chapterStep.map(chapterStep => ({ id: chapterStep })) : [],
         }
 
         return data
     }
 
-    public static async toDomain(raw: any): Promise<Chapter> {
+    public static toDomain(raw: any): Chapter {
         const slug = Slug.create({ value: raw.slug })
-        const course:Course = await CourseMap.toDomain(raw.course);
-        // const chapterSteps = raw.chapterSteps?.map(chapterStep => ChapterStep.create(chapterStep))
+        const lessons = raw.lessons?.map(lesson => LessonMap.toDomain(lesson))
 
         const chapterDomain = Chapter.create({
             slug,
             notionPageId: raw.notionPageId,
             title: raw.title,
             imageUrl: raw.imageUrl,
-            course,
-            // chapterSteps
+            lessons
         }, new UniqueEntityID(raw.id));
 
 
@@ -38,11 +37,14 @@ export class ChapterMap {
     }
 
     //TODO DTO Chapter response
-    public static toResponse(Chapter: Chapter): any {
+    public static toResponse(chapter: Chapter): any {
+
+        console.log('chapter to response : ', chapter)
         const chapterResponse = {
-            slug: Chapter.slug,
-            title: Chapter.title,
-            imageUrl: Chapter.imageUrl
+            slug: chapter.slug.value,
+            title: chapter.title,
+            imageUrl: chapter.imageUrl,
+            lessons:chapter.lessons.map(lesson => LessonMap.toResponse(lesson))
         }
 
         return chapterResponse

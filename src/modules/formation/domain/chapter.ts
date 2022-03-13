@@ -4,6 +4,7 @@ import { ChapterCreated } from "./events/chapterCreated";
 import { ChapterId } from "./chapterId";
 import { Slug } from "./slug";
 import { Course } from "./course";
+import { Lesson } from "./lesson";
 
 export interface ChapterProps {
     slug: Slug,
@@ -12,7 +13,8 @@ export interface ChapterProps {
     imageUrl?: string,
     duration?: number,
     course?: Course,
-    order?: number
+    order?: number,
+    lessons?: Lesson[]
 }
 
 export class Chapter extends AggregateRoot<ChapterProps> {
@@ -50,6 +52,10 @@ export class Chapter extends AggregateRoot<ChapterProps> {
 
     get courseId(): string {
         return this.props.course.id.toString()
+    }
+
+    get lessons(): Lesson[] {
+        return this.props.lessons
     }
 
     private constructor(props: ChapterProps, id?: UniqueEntityID) {
