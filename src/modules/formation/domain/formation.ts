@@ -9,6 +9,7 @@ import { Technology } from "./technology";
 
 export interface FormationProps {
     slug: Slug,
+    description?: string
     notionPageId: string
     title: string,
     imageUrl?: string,
@@ -33,6 +34,10 @@ export class Formation extends AggregateRoot<FormationProps> {
 
     get slug(): Slug {
         return this.props.slug
+    }
+
+    get description(): string {
+        return this.props.description
     }
 
     get title(): string {

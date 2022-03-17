@@ -12,6 +12,7 @@ import { Chapter } from "./chapter";
 export interface CourseProps {
     title: string
     slug: Slug
+    description?: string
     notionPageId: string
     imageUrl?: string
     tags?: Tag[]
@@ -39,6 +40,10 @@ export class Course extends AggregateRoot<CourseProps> {
 
     get slug(): Slug {
         return this.props.slug
+    }
+
+    get description(): string {
+        return this.props.description
     }
 
     get title(): string {

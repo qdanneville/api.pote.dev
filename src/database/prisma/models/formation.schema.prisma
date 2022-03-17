@@ -2,6 +2,7 @@ model Formation {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String  @unique
+  description  String?
   notionPageId String @unique
   imageUrl     String?
   isPublished Boolean @default(false)

@@ -235,7 +235,7 @@ export class NotionProviderService implements Notion {
             response = await this.splitBeeClient.get(this.splitBeeTableUrl + this.notionPrerequisitesDatabaseId)
         }
         catch (err) {
-            console.log(err.message)
+            console.log(err)
             throw new BadGatewayException('Something wrong with notion API - Prerequisites')
         }
 

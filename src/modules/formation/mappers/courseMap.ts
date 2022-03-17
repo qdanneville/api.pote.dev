@@ -18,6 +18,7 @@ export class CourseMap {
         const data = {
             id: course.id.toString(),
             slug: course.slug.value,
+            description: course.description,
             notionPageId: course.notionPageId,
             title: course.title,
             imageUrl: course.imageUrl,
@@ -41,6 +42,7 @@ export class CourseMap {
 
         const courseDomain = Course.create({
             slug,
+            description: raw.description,
             notionPageId: raw.notionPageId,
             title: raw.title,
             isPublished: raw.isPublished,
@@ -59,6 +61,7 @@ export class CourseMap {
     public static toResponse(course: Course): any {
         const courseResponse = {
             slug: course.slug.value,
+            description: course.description,
             title: course.title,
             imageUrl: course.imageUrl,
             difficulty: course.difficulty.name,

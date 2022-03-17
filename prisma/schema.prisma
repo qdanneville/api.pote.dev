@@ -28,6 +28,7 @@ model Course {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String  @unique
+  description  String?
   notionPageId String  @unique
   imageUrl     String?
   duration     Int?
@@ -70,6 +71,7 @@ model Formation {
   id           String  @id @default(uuid())
   slug         String  @unique
   title        String  @unique
+  description  String?
   notionPageId String  @unique
   imageUrl     String?
   isPublished  Boolean @default(false)
@@ -159,7 +161,6 @@ model User {
   username String  @unique
   email    String  @unique
   password String?
-  testField String?
 
   isEmailVerified Boolean @default(false)
   isAdmin         Boolean

@@ -13,6 +13,7 @@ export class FormationMap {
         const data = {
             id: formation.id.toString(),
             slug: formation.slug.value,
+            description: formation.description,
             notionPageId: formation.notionPageId,
             title: formation.title,
             imageUrl: formation.imageUrl,
@@ -33,6 +34,7 @@ export class FormationMap {
 
         const formationDomain = Formation.create({
             slug,
+            description: raw.description,
             notionPageId: raw.notionPageId,
             title: raw.title,
             isPublished: raw.isPublished,
@@ -49,6 +51,7 @@ export class FormationMap {
     public static toResponse(formation: Formation): any {
         const formationResponse = {
             slug: formation.slug.value,
+            description: formation.description,
             title: formation.title,
             imageUrl: formation.imageUrl,
             difficulty: formation.difficulty.name,
@@ -62,6 +65,7 @@ export class FormationMap {
     public static toFormationDetailResponse(formation: Formation): any {
         const formationResponse = {
             slug: formation.slug.value,
+            description: formation.description,
             title: formation.title,
             imageUrl: formation.imageUrl,
             difficulty: formation.difficulty.name,

@@ -84,8 +84,12 @@ export class NotionContentService implements NotionContent {
                     const formationDetail = notionFormation[Object.keys(notionFormation)[0]].value
                     const formationSlug = Slug.create({ value: formation.slug })
 
+                    console.log('formation : ', formation)
+                    console.log('notion formation  : ', notionFormation)
+
                     const formationProps: FormationProps = {
                         slug: formationSlug,
+                        description: formation.description,
                         notionPageId: formation.id,
                         title: formation.title,
                         imageUrl: formationDetail.format?.page_cover ? formationDetail.format?.page_cover : null,
@@ -140,6 +144,7 @@ export class NotionContentService implements NotionContent {
 
                 const title = notionCourse.properties.title.title[0].plain_text
                 const slug = notionCourse.properties.slug.rich_text[0].plain_text
+                const description = notionCourse.properties.description.rich_text[0].plain_text
                 const icon = notionCourse.icon.emoji
                 const order = notionCourse.properties.order?.number
                 const difficulty: Difficulty = await this.difficultyRepository.getDifficultyByNotionPageId(course.difficulty[0])
@@ -149,6 +154,7 @@ export class NotionContentService implements NotionContent {
 
                 const courseProps: CourseProps = {
                     slug: Slug.create({ value: slug }),
+                    description,
                     title,
                     notionPageId: course.id,
                     imageUrl: icon,
@@ -198,7 +204,6 @@ export class NotionContentService implements NotionContent {
                 // const lessons: [] = await Promise.all(course.technologies?.map(async (technology) => (await this.technologyRepository.getTechnologyByNotionPageId(technology)).technologyId))
 
                 const lessons = await this.notionProviderService.getChapterLessons(chapter.id);
-
 
                 //Create or update lessons
                 const chapterProps: ChapterProps = {
