@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CourseRepository } from '../../repos/courseRepository';
-import { CourseMap } from '../../mappers/CourseMap';
+import { CourseMap } from '../../mappers/courseMap';
 
 
 @Injectable()
