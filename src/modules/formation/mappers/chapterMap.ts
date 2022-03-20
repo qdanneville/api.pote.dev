@@ -38,8 +38,6 @@ export class ChapterMap {
 
     //TODO DTO Chapter response
     public static toResponse(chapter: Chapter): any {
-
-        console.log('chapter to response : ', chapter)
         const chapterResponse = {
             slug: chapter.slug.value,
             title: chapter.title,

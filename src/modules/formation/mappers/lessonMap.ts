@@ -20,7 +20,6 @@ export class LessonMap {
     }
 
     public static toDomain(raw: any): Lesson {
-        console.log('lesson raw', raw);
         const slug = Slug.create({ value: raw.slug })
 
         const lessonDomain = Lesson.create({
