@@ -7,9 +7,12 @@ import { LessonMap } from '../mappers/lessonMap';
 export class LessonRepository {
     constructor(private readonly entities: PrismaService) { }
 
-    getLessons() {
+    async getLessons() {
         const LessonModel = this.entities.lesson
-        return LessonModel.findMany();
+
+        const lessons = await LessonModel.findMany();
+
+        return lessons.map(lesson => LessonMap.toDomain(lesson))
     }
 
     async exists(title: string) {

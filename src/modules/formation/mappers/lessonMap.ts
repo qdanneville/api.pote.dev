@@ -33,11 +33,12 @@ export class LessonMap {
     }
 
     //TODO DTO Lesson response
-    public static toResponse(Lesson: Lesson): any {
+    public static toResponse(lesson: Lesson): any {
         const lessonResponse = {
-            slug: Lesson.slug.value,
-            title: Lesson.title,
-            imageUrl: Lesson.imageUrl
+            slug: lesson.slug.value,
+            title: lesson.title,
+            imageUrl: lesson.imageUrl,
+            notionContent: lesson.notionContent
         }
 
         return lessonResponse

@@ -11,7 +11,9 @@ import { GetDifficultiesModule } from './useCases/getDifficulties/getDifficultie
 import { GetTechnologiesModule } from './useCases/getTechnologies/getTechnologies.module';
 import { GetCoursesModule } from './useCases/getCourses/getCourses.module';
 import { GetCourseBySlugModule } from './useCases/getCourseBySlug/getCourseBySlug.module';
+import { GetLessonsModule } from './useCases/getLessons/getLessons.module';
 import { GetTagsModule } from './useCases/getTags/getTags.module';
+import { GetLessonBySlugModule } from './useCases/getLessonBySlug/getLessonBySlyg.module';
 
 @Module({
     imports: [
@@ -19,8 +21,10 @@ import { GetTagsModule } from './useCases/getTags/getTags.module';
         GetPageModule,
         GetFormationsModule,
         GetCoursesModule,
+        GetLessonsModule,
         GetCourseBySlugModule,
         GetFormationsBySlugModule,
+        GetLessonBySlugModule,
         GetDifficultiesModule,
         GetTechnologiesModule,
         GetTagsModule

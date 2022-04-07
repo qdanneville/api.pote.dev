@@ -9,6 +9,7 @@ export interface LessonProps {
     title: string;
     slug: Slug;
     notionPageId: string
+    notionContent?: object
     imageUrl?: string
     duration?: number
     order?: number
@@ -30,6 +31,10 @@ export class Lesson extends AggregateRoot<LessonProps> {
 
     get notionPageId(): string {
         return this.props.notionPageId
+    }
+
+    get notionContent(): object {
+        return this.props.notionContent
     }
 
     get slug(): Slug {
@@ -54,6 +59,10 @@ export class Lesson extends AggregateRoot<LessonProps> {
 
     get chapterId(): string {
         return this.props.chapter.chapterId.id.toString()
+    }
+
+    set notionContent(content:object) {
+        this.props.notionContent = content
     }
 
     private constructor(props: LessonProps, id?: UniqueEntityID) {
