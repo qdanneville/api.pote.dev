@@ -70,6 +70,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncFormations() {
+        console.log('sync formations');
         const formations = await this.notionProviderService.getFormations();
 
         try {
@@ -84,8 +85,7 @@ export class NotionContentService implements NotionContent {
                     const formationDetail = notionFormation[Object.keys(notionFormation)[0]].value
                     const formationSlug = Slug.create({ value: formation.slug })
 
-                    console.log('formation : ', formation)
-                    console.log('notion formation  : ', notionFormation)
+                    console.log('formation : ', formationDetail);
 
                     const formationProps: FormationProps = {
                         slug: formationSlug,
@@ -93,6 +93,7 @@ export class NotionContentService implements NotionContent {
                         notionPageId: formation.id,
                         title: formation.title,
                         imageUrl: formationDetail.format?.page_cover ? formationDetail.format?.page_cover : null,
+                        icon: formationDetail.format?.page_icon ? formationDetail.format?.page_icon : null,
                         isPublished: formation.isPublished,
                     }
 
@@ -133,7 +134,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncCourses() {
-
+        console.log('sync courses');
         const courses = await this.notionProviderService.getCourses();
 
         try {
@@ -187,7 +188,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncChapters() {
-
+        console.log('sync chapters');
         const chapters = await this.notionProviderService.getChapters();
 
         try {
@@ -238,6 +239,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncLessons(lessons, chapter: Chapter) {
+        console.log('sync lessons');
         try {
             return await Promise.all(lessons.map(async lesson => {
                 let lessonDomain: Lesson
@@ -285,7 +287,7 @@ export class NotionContentService implements NotionContent {
 
 
     public async syncTags() {
-
+        console.log('sync tags');
         const tags = await this.notionProviderService.getTags();
 
         try {
@@ -328,7 +330,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncTechnologies() {
-
+        console.log('sync technologies');
         const technologies = await this.notionProviderService.getTechnologies();
 
         try {
@@ -371,7 +373,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncDifficulties() {
-
+        console.log('sync defficulties');
         const difficulties = await this.notionProviderService.getDifficulties();
 
         try {
@@ -414,7 +416,7 @@ export class NotionContentService implements NotionContent {
     }
 
     public async syncPrerequisites() {
-
+        console.log('sync prerequisites');
         const prerequisites = await this.notionProviderService.getPrerequisites();
 
         try {

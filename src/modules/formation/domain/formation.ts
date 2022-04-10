@@ -13,6 +13,7 @@ export interface FormationProps {
     notionPageId: string
     title: string,
     imageUrl?: string,
+    icon?: string,
     isPublished?: boolean
     courses?: Course[]
     difficulty?: Difficulty
@@ -46,6 +47,10 @@ export class Formation extends AggregateRoot<FormationProps> {
 
     get isPublished(): boolean {
         return this.props.isPublished
+    }
+
+    get icon(): string {
+        return this.props.icon
     }
 
     get imageUrl(): string {

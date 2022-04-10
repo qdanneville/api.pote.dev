@@ -5,6 +5,7 @@ model Formation {
   description  String?
   notionPageId String @unique
   imageUrl     String?
+  icon String?
   isPublished Boolean @default(false)
 
   courses    Course[]
