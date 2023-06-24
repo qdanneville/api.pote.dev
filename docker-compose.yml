@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  nestjs:
+    image: ${NESTJS_IMAGE}
+    container_name: api-nestjs
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+      - APP_PORT=${APP_PORT}
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    env_file:
+      - .env
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - VIRTUAL_NETWORK=${VIRTUAL_NETWORK}
+      - VIRTUAL_PORT=${APP_PORT}
+      - APP_PORT=${APP_PORT}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - redis
+  redis:
+    image: redis
+    container_name: api-redis
+    restart: always
+    ports:
+      - 6379:6379
+    env_file:
+      - .env
+networks:
+  default:
+    external:
+      name: ${VIRTUAL_NETWORK}

@@ -1,0 +1,8 @@
+model Prerequisite {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  notionPageId String @unique
+  description String?
+
+  courses Course[] @relation(references: [id])
+}

@@ -1,0 +1,54 @@
+image:
+  name: docker/compose:1.27.4
+
+services:
+  - docker:dind
+
+variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - "which ssh-agent || (apk update && apk add openssh)"
+  - apk add bash
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 700 ~/.ssh/id_rsa
+  - eval "$(ssh-agent -s)"
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - chmod 644 ~/.ssh/known_hosts
+  - export IMAGE=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - docker login registry.gitlab.com -u $USERNAME -p $TOKEN
+  - bash ./scripts/setup_env.sh
+
+build:
+  stage: build
+  script:
+    - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
+    - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
+    - export NESTJS_IMAGE=$IMAGE:nestjs
+    - docker pull $IMAGE:migrate || true
+    - docker pull $IMAGE:studio || true
+    - docker pull $IMAGE:nestjs || true
+    - docker-compose -f docker-compose.migrate.yml build --no-cache
+    - docker-compose -f docker-compose.studio.yml build --no-cache
+    - docker-compose -f docker-compose.yml build --no-cache
+    - docker push $IMAGE:migrate
+    - docker push $IMAGE:studio
+    - docker push $IMAGE:nestjs
+
+deploy:
+  stage: deploy
+  script:
+    - export PRISMA_MIGRATE_IMAGE=$IMAGE:migrate
+    - export PRISMA_STUDIO_IMAGE=$IMAGE:studio
+    - export NESTJS_IMAGE=$IMAGE:nestjs
+    - chmod +x ./scripts/deploy.sh
+    - scp -r ./.env ./.eslintrc.js ./.prettierrc ./.dockerignore ./* $SSH_USER@$SSH_SERVER:~/app/api
+    - bash ./scripts/deploy.sh

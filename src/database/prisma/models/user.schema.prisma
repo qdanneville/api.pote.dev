@@ -1,0 +1,19 @@
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String?
+  
+  isEmailVerified Boolean  @default(false)
+  isAdmin Boolean
+
+  role   Role? @relation(fields: [roleId], references: [id])
+  roleId Int? @default(1)
+
+  lessonsProgressions LessonProgression[]
+  coursesStarted Course[] @relation(name:"coursesStarted")
+  coursesSucceeded Course[] @relation(name:"coursesSucceeded")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

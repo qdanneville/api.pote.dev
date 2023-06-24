@@ -1,0 +1,178 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Chapter {
+  id           String @id @default(uuid())
+  slug         String @unique
+  title        String @unique
+  notionPageId String @unique
+  order        Int?   @default(0)
+  duration     Int?
+
+  course   Course? @relation(fields: [courseId], references: [id])
+  courseId String?
+
+  lessons Lesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id           String  @id @default(uuid())
+  slug         String  @unique
+  title        String  @unique
+  description  String?
+  notionPageId String  @unique
+  imageUrl     String?
+  duration     Int?
+  order        Int?    @default(0)
+
+  chapters      Chapter[]
+  prerequisites Prerequisite[] @relation(references: [id])
+  tags          Tag[]          @relation(references: [id])
+  technologies  Technology[]   @relation(references: [id])
+
+  formation   Formation? @relation(fields: [formationId], references: [id])
+  formationId String?
+
+  difficulty  Difficulty? @relation(fields: [diffiultyId], references: [id])
+  diffiultyId Int?
+
+  tryingUsers       User?   @relation("coursesStarted", fields: [tryingUserId], references: [id])
+  successfullUsers  User?   @relation("coursesSucceeded", fields: [successfullUserId], references: [id])
+  tryingUserId      String?
+  successfullUserId String?
+
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Difficulty {
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
+  imageUrl     String?
+
+  formations Formation[]
+  courses    Course[]
+}
+
+model Formation {
+  id           String  @id @default(uuid())
+  slug         String  @unique
+  title        String  @unique
+  description  String?
+  notionPageId String  @unique
+  imageUrl     String?
+  icon         String?
+  isPublished  Boolean @default(false)
+
+  courses Course[]
+
+  difficulty   Difficulty? @relation(fields: [difficultyId], references: [id])
+  difficultyId Int?
+
+  technologies Technology[] @relation(references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
+  id           String  @id @default(uuid())
+  slug         String  @unique
+  title        String  @unique
+  notionPageId String  @unique
+  imageUrl     String?
+  duration     Int?
+  order        Int     @default(0)
+
+  chapter   Chapter? @relation(fields: [chapterId], references: [id])
+  chapterId String?
+
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  LessonProgression LessonProgression[]
+}
+
+model LessonProgression {
+  id Int @id @default(autoincrement())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+  lessonId String
+
+  done Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Prerequisite {
+  id           Int     @id @default(autoincrement())
+  name         String  @unique
+  notionPageId String  @unique
+  description  String?
+
+  courses Course[] @relation(references: [id])
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  users User[]
+}
+
+model Tag {
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
+  imageUrl     String?
+
+  courses Course[] @relation(references: [id])
+}
+
+model Technology {
+  id           Int     @id @default(autoincrement())
+  slug         String  @unique
+  notionPageId String  @unique
+  name         String  @unique
+  imageUrl     String?
+
+  courses    Course[]    @relation(references: [id])
+  formations Formation[] @relation(references: [id])
+}
+
+model User {
+  id       String  @id @default(uuid())
+  username String  @unique
+  email    String  @unique
+  password String?
+
+  isEmailVerified Boolean @default(false)
+  isAdmin         Boolean
+
+  role   Role? @relation(fields: [roleId], references: [id])
+  roleId Int?  @default(1)
+
+  lessonsProgressions LessonProgression[]
+  coursesStarted      Course[]            @relation(name: "coursesStarted")
+  coursesSucceeded    Course[]            @relation(name: "coursesSucceeded")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

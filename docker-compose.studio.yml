@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  prisma-studio:
+    image: ${PRISMA_STUDIO_IMAGE}
+    container_name: api-prisma-studio
+    build:
+      context: ./prisma
+      dockerfile: Dockerfile.studio
+    env_file:
+      - .env
+    environment:
+      - VIRTUAL_HOST=${STUDIO_HOST}
+      - VIRTUAL_NETWORK=${VIRTUAL_NETWORK}
+      - VIRTUAL_PORT=${STUDIO_PORT}
+      - STUDIO_PORT=${STUDIO_PORT}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_STUDIO_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    container_name: api-postgres
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+    name: potedev-dev-db
+
+networks:
+  default:
+    external:
+      name: ${VIRTUAL_NETWORK}

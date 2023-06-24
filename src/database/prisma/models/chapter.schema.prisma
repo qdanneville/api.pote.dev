@@ -1,0 +1,16 @@
+model Chapter {
+  id       String @id @default(uuid())
+  slug     String @unique
+  title    String @unique
+  notionPageId String @unique
+  order Int? @default(0)
+  duration Int?
+
+  course   Course? @relation(fields: [courseId], references: [id])
+  courseId String?
+
+  lessons Lesson[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}

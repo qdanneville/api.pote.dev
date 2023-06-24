@@ -1,0 +1,31 @@
+model Course {
+  id           String  @id @default(uuid())
+  slug         String  @unique
+  title        String @unique
+  description  String?
+  notionPageId String @unique
+  imageUrl     String?
+  duration     Int?
+  order        Int? @default(0)
+
+  chapters      Chapter[]
+  prerequisites Prerequisite[] @relation(references: [id])
+  tags          Tag[]          @relation(references: [id])
+  technologies          Technology[]          @relation(references: [id])
+
+  formation   Formation? @relation(fields: [formationId], references: [id])
+  formationId String?
+
+  difficulty   Difficulty? @relation(fields: [diffiultyId], references: [id])
+  diffiultyId Int?
+
+  tryingUsers      User?    @relation("coursesStarted", fields: [tryingUserId], references: [id])
+  successfullUsers      User?    @relation("coursesSucceeded", fields: [successfullUserId], references: [id])
+  tryingUserId    String?
+  successfullUserId String?
+
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

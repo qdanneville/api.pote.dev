@@ -1,0 +1,10 @@
+model Difficulty {
+  id       Int     @id @default(autoincrement())
+  slug     String  @unique
+  notionPageId String @unique
+  name     String  @unique
+  imageUrl String?
+
+  formations Formation[]
+  courses Course[]
+}
